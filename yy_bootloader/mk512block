@@ -1,0 +1,9 @@
+#!/bin/bash
+rm block_s
+touch block_s
+for ((i=1;i<=512;i++))
+do
+    #echo $(expr $i \* 3 + 1)
+    echo -e  "\x22" >> block_s
+done
+

@@ -1,0 +1,1 @@
+dd count=1 if=block_s of=a.img oseek=1

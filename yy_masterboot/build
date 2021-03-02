@@ -1,0 +1,2 @@
+nasm -g -fbin masterboot.s
+dd conv=notrunc if=masterboot of=c.img count=1
