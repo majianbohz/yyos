@@ -1,0 +1,9 @@
+#! /bin/bash
+
+tar -czvf  masterboot.tar.gz  yy_masterboot/
+tar -czvf  bootloader.tar.gz  yy_bootloader/
+bkdir=`date "+%m%d%H%M%Y.%S"`
+echo ${bkdir}
+mkdir -pv zz_backup/${bkdir}
+mv *.tar.gz zz_backup/${bkdir}
+
