@@ -1,32 +1,44 @@
 #include "ext2.h"
-extern read_ata_sector;
+extern void read_ata_sector(int sectorNum, int sectorNo, void* buf);
+extern void* pRawKernelBuffer;
 
-const int partitionStartSectorNo = 63
+const int partitionStartSectorNo = 63;
 
-void loadKenelFromExt2() {
-  char buf[1024]; 
-  sGroupDescriptor  gd = getBlockGroupDescriptor(buf);
-  gd.inodeTable; // inode table start block num
-  sInode rootInode = getRootInode(gd.inodeTable);
-  rootInode.blocks[0];
-  rootInode.size;
-  
-}
-
-sGroupDescriptor getBlockGroupDescriptor(char * buf) {
-    char sectorNum = 2;
-    read_ata_sector(2, buf);
-}
-
-sInode getRootInode(int blockNo, char * buf) {
+sGroupDescriptor* getBlockGroupDescriptor(int blockNo, void* buf) {
+    int sectorNum = 2;
     int sectorNo = blockNo*2 + partitionStartSectorNo;
-    char sectorNum = 2;
+    read_ata_sector(sectorNum, sectorNo, buf);
+    return (sGroupDescriptor*)buf;
+}
+
+sInode* getRootInode(int blockNo, void* buf) {
+    int sectorNo = blockNo*2 + partitionStartSectorNo;
+    int sectorNum = 2;
     read_ata_sector(sectorNum, sectorNo, buf);
     return (sInode*)(buf + sizeof(sInode));
 }
 
-void loadKenelFileRaw(char * rawBuffer, unsigned int blocks[15]) {
-      
+sInode* getKernelInodeFromRootDir(sInode* pRootInode) {
+    return 0;
 }
 
+void loadKernelFileRaw(char * rawKernelBuffer, sInode* pRootInode) {
+    int fileBlockNum = pRootInode->size/1024;
+    for (int i=0; i<fileBlockNum; i++) {
+        int sectorNo = pRootInode->blocks[i]*2 + partitionStartSectorNo;
+        char sectorNum = 2;
+        read_ata_sector(sectorNum, sectorNo, rawKernelBuffer + i*1024);    
+    } 
+}
 
+void loadKenelFromExt2() {
+    char buf[1024]; 
+    sGroupDescriptor*  pGD = getBlockGroupDescriptor(2, buf);
+    //gd.inodeTable; // inode table start block num
+    sInode* pRootInode = getRootInode(pGD->inodeTable, buf);
+    //rootInode.blocks[0];
+    //rootInode.size;  
+    sInode* pKernelInode = getKernelInodeFromRootDir(pRootInode);
+    
+    loadKernelFileRaw(pRawKernelBuffer, pKernelInode);
+}

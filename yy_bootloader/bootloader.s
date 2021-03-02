@@ -4,44 +4,13 @@
 
 %include "descriptor.inc" ; 
 
-org 08000h
-    jmp label_start16
+global _start
 
-[SECTION .GDT]
-label_GDT: Descriptor 0,0,0
-label_desc_VIDEO: Descriptor 0B8000h, 07fffh, Seg_Data_Attr_1M ; 
-label_desc_CODE32: Descriptor 0, seg_code32_len, Seg_Code_Attr_1M ;
-label_desc_KERNEL: Descriptor 0100000h, 0fffffh, Seg_Code_Attr_1M ;
-label_desc_KERNEL_Data: Descriptor 01000000h, 0fffffh, Seg_Data_Attr_1M ; 
-
-gdtLen  equ $ - label_GDT
-gdtPtr  dw gdtLen ;
-        dd 0
-
-selector_video        equ label_desc_VIDEO - label_GDT
-selector_code32       equ label_desc_CODE32 - label_GDT
-selector_kernel       equ label_desc_KERNEL - label_GDT
-selector_kernel_data  equ label_desc_KERNEL_Data - label_GDT
-
-
-[SECTION .IDT]
-idt_start:
-%rep 255
-      dw ISR_OFF
-      dw 0x0010
-      db 0x00
-      db 10001110b
-      dw 0x0000
-%endrep
-idt_end:
-
-idt_info:
-    dw idt_end - idt_start - 1
-    dd idt_start
+;org 08000h
 
 bits 16
 section .text16
-label_start16:
+_start:       
   mov ax, cs
   mov ds, ax
   mov es, ax
@@ -78,6 +47,40 @@ fn_set_seg_base:
   mov byte [ebx + 4], al
   mov byte [ebx + 7], ah
   ret
+
+
+  [SECTION .GDT]
+label_GDT: Descriptor 0,0,0
+label_desc_VIDEO: Descriptor 0B8000h, 07fffh, Seg_Data_Attr_1M ; 
+label_desc_CODE32: Descriptor 0, seg_code32_len, Seg_Code_Attr_1M ;
+label_desc_KERNEL: Descriptor 0100000h, 0fffffh, Seg_Code_Attr_1M ;
+label_desc_KERNEL_Data: Descriptor 01000000h, 0fffffh, Seg_Data_Attr_1M ; 
+
+gdtLen  equ $ - label_GDT
+gdtPtr  dw gdtLen ;
+        dd 0
+
+selector_video        equ label_desc_VIDEO - label_GDT
+selector_code32       equ label_desc_CODE32 - label_GDT
+selector_kernel       equ label_desc_KERNEL - label_GDT
+selector_kernel_data  equ label_desc_KERNEL_Data - label_GDT
+
+
+[SECTION .IDT]
+idt_start:
+%rep 255
+      dw ISR_OFF
+      dw 0x0010
+      db 0x00
+      db 10001110b
+      dw 0x0000
+%endrep
+idt_end:
+
+idt_info:
+    dw idt_end - idt_start - 1
+    dd idt_start
+
 
 ; ===================================
 ; ============ 32 bit ===============

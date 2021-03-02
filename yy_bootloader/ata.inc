@@ -46,54 +46,60 @@
 ;
 ;  Most of these should work on even non-IDE hard disks.
 ;  This code is for reading, the code for writing is the next article.
-
+;
+;  void read_ata_sector(int sectorNum, int sectorNo, void* buf);
+;
 ;  input : ds:esi -> db read sector number
-;                 -> dd start LBA
+;                 -> dd start LBA28  (sector No)
 ;  output: es:edi -> buffer
 read_ata_sector:
+   push  ebp
+   mov   ebp, esp
+
    mov     dx,1f6h         ;Drive a & LBA 24~27
    mov     al,0e0h         ;Drive 0(e0) Drive 1(f0)   LBA mode
-   mov     bl, [esi + 4]
+   mov     bl, [ebp + 8 + 4]   ;Read sector No [24~27] 
    and     bl, 00fh
    add     al, bl
    out     dx,al
 
    mov     dx,1f2h         ;Sector count port
-   mov     al, [esi]       ;Read one sector
+   mov     al, [ebp + 4]       ;Read sector numbers
    out     dx,al
 
    mov     dx,1f3h         ;Sector number port
-   mov     al, [esi + 1]     ;Read sector one
+   mov     al, [ebp + 8 + 1]   ;Read sector No [0~7]
    out     dx,al
 
    mov     dx,1f4h         ;Cylinder low port
-   mov     al, [esi + 2]     ;Cylinder 0
+   mov     al, [ebp + 8 + 2]   ;Read sector No [8~15]
    out     dx,al
 
    mov     dx,1f5h         ;Cylinder high port
-   mov     al, [esi + 3]    ;The rest of the cylinder 0
+   mov     al, [ebp + 8 + 3]   ;Read sector No [16~23]
    out     dx,al
 
    mov     dx,1f7h         ;Command port
    mov     al,20h          ;Read with retry.
    out     dx,al
+
 still_going:
    mov     dx, 3f6h
    in      al,dx
-   test    al,8            ;This means the sector buffer requires
-            ;servicing.
+   test    al,8            ;This means the sector buffer requires servicing.
    jz      still_going     ;Don't continue until the sector buffer
            
 ;; is ready.
 
    xor     cx, cx
-   mov     cl, [esi]        ;cx -> read sector number
-   shl     cx, 8            ;cx -> sector number * 512 / 2 (word number) 
- ; mov     di, buffer
+   mov     cl, [esi]       ;cx -> read sector number
+   shl     cx, 8           ;cx -> sector number * 512 / 2 (word number) 
+   mov     edi, [ebp + 12]    ; 
    mov     dx,1f0h         ;Data port - data comes in and out of here.
    rep     insw            ; es:edi -> buffer
 
-   ret     ; return 
+   pop  ebp 
+   ret                     ; return 
 
 ;
 ;       Writing to the hard disk using the ports!     by qark

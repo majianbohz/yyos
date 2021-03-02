@@ -1,6 +1,6 @@
 MExt2.c
 
-#include "../include/MExt2.h"
+//#include "../include/MExt2.h"
 
 static char m_fileName[255] = {0};
 
