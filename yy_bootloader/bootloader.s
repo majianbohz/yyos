@@ -7,7 +7,7 @@
 global _start
 global pRawKernelBuffer
 
-;org 08000h
+;org 08000h    ; ld -Ttext 0x8000 
 
 bits 16
 section .text
@@ -18,15 +18,6 @@ _start:
   mov ss, ax
   mov sp, 07c00h
 
-  ; 初始化 32位 代码段描述符
-  xor eax, eax
-  mov ax, cs
-  shl eax, 4
-  add eax, label_seg_code32
-  mov ebx, label_desc_CODE32
-  call fn_set_seg_base  ; focus stack space
-  
-  ;
   mov dword [gdtPtr +2], label_GDT
 
   lgdt [gdtPtr]
@@ -38,24 +29,16 @@ _start:
   mov cr0, eax
 
   ; Great JUMP to Protect Mode !!!!!!!
-  jmp dword selector_code32 : 0
+  jmp dword selector_code32 : label_seg_code32
   
-; parameter: eax <- seg_base
-;            ebx <- descriptor_base 
-fn_set_seg_base:
-  mov word [ebx + 2], ax
-  shr eax, 16
-  mov byte [ebx + 4], al
-  mov byte [ebx + 7], ah
-  ret
 
-
-  [SECTION .GDT]
+; From 0 
+[SECTION .GDT]
 label_GDT: Descriptor 0,0,0
 label_desc_VIDEO: Descriptor 0B8000h, 07fffh, Seg_Data_Attr_1M ; 
-label_desc_CODE32: Descriptor 0, seg_code32_len, Seg_Code_Attr_1M ;
+label_desc_CODE32: Descriptor 0, 0fffffh, Seg_Code_Attr_1M ;
 label_desc_KERNEL: Descriptor 0100000h, 0fffffh, Seg_Code_Attr_1M ;
-label_desc_KERNEL_Data: Descriptor 01000000h, 0fffffh, Seg_Data_Attr_1M ; 
+label_desc_KERNEL_Data: Descriptor 0100000h, 0fffffh, Seg_Data_Attr_1M ; 
 
 gdtLen  equ $ - label_GDT
 gdtPtr  dw gdtLen ;
@@ -70,7 +53,7 @@ selector_kernel_data  equ label_desc_KERNEL_Data - label_GDT
 [SECTION .IDT]
 idt_start:
 %rep 255
-      dw ISR_OFF
+      dw isr0      ; dw ISR_OFF cs base addr =>0
       dw 0x0010
       db 0x00
       db 10001110b
@@ -111,6 +94,8 @@ label_seg_code32:
 
    sti
 
+   jmp $
+
    mov esi, ata_read_param
    mov edi, 0a000h
    call read_ata_sector
@@ -124,7 +109,7 @@ label_seg_code32:
  
   jmp $
 
-ISR_OFF  equ $ - $$    ; get offset in current section
+;ISR_OFF  equ $ - $$    ; get offset in current section
 isr0:
    push esi
    push edi
