@@ -5,6 +5,7 @@
 %include "descriptor.inc" ; 
 
 global _start
+global pRawKernelBuffer
 
 ;org 08000h
 
@@ -151,3 +152,4 @@ ata_read_param:
 
 seg_code32_len equ $ - label_seg_code32
 
+pRawKernelBuffer equ 01000000h

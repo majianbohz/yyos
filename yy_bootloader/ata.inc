@@ -52,6 +52,9 @@
 ;  input : ds:esi -> db read sector number
 ;                 -> dd start LBA28  (sector No)
 ;  output: es:edi -> buffer
+
+global read_ata_sector
+
 read_ata_sector:
    push  ebp
    mov   ebp, esp

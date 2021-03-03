@@ -1,3 +1,6 @@
-nasm -g -fbin bootloader.s
-dd conv=notrunc if=bootloader of=c.img oseek=1
-
+rm -f *.o bootmgr
+nasm -f elf32 -o bootloader.o  bootloader.s
+gcc -march=i386 -m32 -ffreestanding -fno-pie  -c loadkernel.c 
+ld -melf_i386 -N -Ttext 0x8000 -Ttext-segment 0x9000 --oformat binary -Map bootmgr.map --verbose -o bootmgr bootloader.o loadkernel.o
+#dd conv=notrunc if=bootmgr of=c.img oseek=1
+hexdump -C bootmgr
