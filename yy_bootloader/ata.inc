@@ -61,25 +61,25 @@ read_ata_sector:
 
    mov     dx,1f6h         ;Drive a & LBA 24~27
    mov     al,0e0h         ;Drive 0(e0) Drive 1(f0)   LBA mode
-   mov     bl, [ebp + 8 + 4]   ;Read sector No [24~27] 
+   mov     bl, [ebp + 12 + 4]   ;Read sector No [24~27] 
    and     bl, 00fh
    add     al, bl
    out     dx,al
 
    mov     dx,1f2h         ;Sector count port
-   mov     al, [ebp + 4]       ;Read sector numbers
+   mov     al, [ebp + 8]       ;Read sector numbers
    out     dx,al
 
    mov     dx,1f3h         ;Sector number port
-   mov     al, [ebp + 8 + 1]   ;Read sector No [0~7]
+   mov     al, [ebp + 12 + 1]   ;Read sector No [0~7]
    out     dx,al
 
    mov     dx,1f4h         ;Cylinder low port
-   mov     al, [ebp + 8 + 2]   ;Read sector No [8~15]
+   mov     al, [ebp + 12 + 2]   ;Read sector No [8~15]
    out     dx,al
 
    mov     dx,1f5h         ;Cylinder high port
-   mov     al, [ebp + 8 + 3]   ;Read sector No [16~23]
+   mov     al, [ebp + 12 + 3]   ;Read sector No [16~23]
    out     dx,al
 
    mov     dx,1f7h         ;Command port
@@ -95,9 +95,9 @@ still_going:
 ;; is ready.
 
    xor     cx, cx
-   mov     cl, [esi]       ;cx -> read sector number
+   mov     cl, [ebp + 8]       ;cx -> read sector number
    shl     cx, 8           ;cx -> sector number * 512 / 2 (word number) 
-   mov     edi, [ebp + 12]    ; 
+   mov     edi, [ebp + 16]    ; 
    mov     dx,1f0h         ;Data port - data comes in and out of here.
    rep     insw            ; es:edi -> buffer
 

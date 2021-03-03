@@ -31,7 +31,7 @@ void loadKernelFileRaw(char * rawKernelBuffer, sInode* pRootInode) {
     } 
 }
 
-void loadKenelFromExt2() {
+void loadKernelFromExt2() {
     char buf[1024]; 
     sGroupDescriptor*  pGD = getBlockGroupDescriptor(2, buf);
     //gd.inodeTable; // inode table start block num

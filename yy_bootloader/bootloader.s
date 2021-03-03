@@ -7,6 +7,8 @@
 global _start
 global pRawKernelBuffer
 
+extern loadKernelFromExt2
+
 ;org 08000h    ; ld -Ttext 0x8000 
 
 bits 16
@@ -94,20 +96,14 @@ label_seg_code32:
 
    sti
 
-   jmp $
-
-   mov esi, ata_read_param
-   mov edi, 0a000h
+   push dword 0a000h
+   push dword 0
+   push dword 2
    call read_ata_sector
 
-  mov ax, selector_kernel_data
-  mov es, ax
-  mov edi, 0
-  mov esi, ata_read_param
-  mov dword [esi+1], 65    
-  call read_ata_sector
- 
-  jmp $
+   call loadKernelFromExt2
+
+   jmp $
 
 ;ISR_OFF  equ $ - $$    ; get offset in current section
 isr0:
