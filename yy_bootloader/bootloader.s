@@ -10,7 +10,7 @@ global pRawKernelBuffer
 ;org 08000h
 
 bits 16
-section .text16
+section .text
 _start:       
   mov ax, cs
   mov ds, ax
@@ -87,7 +87,7 @@ idt_info:
 ; ============ 32 bit ===============
 ; ===================================
 bits 32
-section .text32
+section .text
 label_seg_code32:
    mov ax, selector_kernel_data
    mov ss, ax
