@@ -31,23 +31,21 @@ _start:
   mov cr0, eax
 
   ; Great JUMP to Protect Mode !!!!!!!
-  jmp dword selector_code32 : label_seg_code32
+  jmp dword selector_kernel : label_seg_code32
   
 
 ; From 0 
 [SECTION .GDT]
 label_GDT: Descriptor 0,0,0
-label_desc_VIDEO: Descriptor 0B8000h, 07fffh, Seg_Data_Attr_1M ; 
-label_desc_CODE32: Descriptor 0, 0fffffh, Seg_Code_Attr_1M ;
-label_desc_KERNEL: Descriptor 0100000h, 0fffffh, Seg_Code_Attr_1M ;
-label_desc_KERNEL_Data: Descriptor 0100000h, 0fffffh, Seg_Data_Attr_1M ; 
+label_desc_VIDEO: Descriptor 0B8000h, 07fffh, Seg_Data_Attr_4G ; 
+label_desc_KERNEL: Descriptor 0, 0fffffh, Seg_Code_Attr_4G ;
+label_desc_KERNEL_Data: Descriptor 0, 0fffffh, Seg_Data_Attr_4G ; 
 
 gdtLen  equ $ - label_GDT
 gdtPtr  dw gdtLen ;
         dd 0
 
 selector_video        equ label_desc_VIDEO - label_GDT
-selector_code32       equ label_desc_CODE32 - label_GDT
 selector_kernel       equ label_desc_KERNEL - label_GDT
 selector_kernel_data  equ label_desc_KERNEL_Data - label_GDT
 
@@ -75,8 +73,11 @@ bits 32
 section .text
 label_seg_code32:
    mov ax, selector_kernel_data
+   mov ds, ax
+   mov es, ax
    mov ss, ax
-   mov esp, 0fffffh
+   mov fs, ax
+   mov esp, 0ffffffh  ; 16M 
 
    mov ax, selector_video
    mov gs, ax
@@ -96,10 +97,11 @@ label_seg_code32:
 
    sti
 
-   push dword 0a000h
-   push dword 0
-   push dword 2
-   call read_ata_sector
+  ; push dword 0a000h
+  ; push dword 0
+  ; push dword 2
+  ; call read_ata_sector
+  ; add  esp, 12    ; pop parameters
 
    call loadKernelFromExt2
 

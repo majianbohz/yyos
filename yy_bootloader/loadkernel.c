@@ -19,6 +19,12 @@ sInode* getRootInode(int blockNo, void* buf) {
 }
 
 sInode* getKernelInodeFromRootDir(sInode* pRootInode) {
+    int rootDirContentSize = pRootInode->size;
+    char buf[1024];
+    int sectorNum = 2;
+    int sectorNo = pRootInode->blocks[0]*2 + partitionStartSectorNo;
+    read_ata_sector(sectorNum, sectorNo, buf);
+    
     return 0;
 }
 
@@ -41,4 +47,15 @@ void loadKernelFromExt2() {
     sInode* pKernelInode = getKernelInodeFromRootDir(pRootInode);
     
     loadKernelFileRaw(pRawKernelBuffer, pKernelInode);
+}
+
+bool compareString(unsigned char* str1, unsigned char* str2) {
+     for (int i=0; true; i++) {
+         if ( str[i] != str2[i]) 
+             return false;
+
+	 if ( 0 == str1[i])
+             return true;
+     }
+     return false;
 }

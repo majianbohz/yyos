@@ -38,16 +38,21 @@ typedef struct{
     unsigned int      flags;
     unsigned int      osInfo;
     unsigned int      blocks[15];
+    unsigned int      generationnumber;
+    unsigned int      extendedattr;
+    unsigned int      upper32bitsize;
+    unsigned int      fragmentblockaddr;
+    unsigned int      osSpecificValue[3];
 } sInode;
 
-// 数据块
+// 目录内容数据块
 typedef struct{
     unsigned int      inodeIndex;
-    unsigned short      recordLen;
+    unsigned short      entryLen;
     unsigned char       fileNameLen;
     unsigned char       fileType;
     unsigned char       fileName[256];   // malloc 根据 fileNameLen    
-}sDataBlock;
+}sDirectoryEntry;
 
 // super block
 typedef struct
