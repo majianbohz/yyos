@@ -54,3 +54,5 @@ dkms.conf
 *.lock
 *.swp
 .vscode
+bochsout.txt
+.DS_Store
