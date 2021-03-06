@@ -53,3 +53,4 @@ dkms.conf
 /yy_bootloader/bochsout.txt
 *.lock
 *.swp
+.vscode
