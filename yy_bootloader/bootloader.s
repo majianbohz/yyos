@@ -135,4 +135,4 @@ ata_read_param:
 
 seg_code32_len equ $ - label_seg_code32
 
-pRawKernelBuffer equ 01000000h
+pRawKernelBuffer dd  01000000h

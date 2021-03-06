@@ -192,7 +192,7 @@
 #  2.2.6 2.6Ghz Intel Core 2 Duo with WinXP/g++ 3.4       21 to 25 Mips
 #  2.2.6 2.1Ghz Athlon XP with Linux 2.6/g++ 3.4          12 to 15 Mips
 #=======================================================================
-cpu: model=core2_penryn_t9600, count=1, ips=50000000, reset_on_triple_fault=1, ignore_bad_msrs=1, msrs="msrs.def"
+cpu: model=atom_n270, count=1, ips=50000000, reset_on_triple_fault=1, ignore_bad_msrs=1, msrs="msrs.def"
 cpu: cpuid_limit_winnt=0
 
 #=======================================================================
@@ -1116,7 +1116,7 @@ speaker: enabled=1, mode=sound, volume=15
 # bootrom) and supports the same networking modules as the NE2000 adapter.
 # It also supports up to 4 devices selected with the card parameter.
 #=======================================================================
-  e1000: enabled=1, mac=52:54:00:12:34:56, ethmod=slirp, script=slirp.conf
+#  e1000: enabled=1, mac=52:54:00:12:34:56, ethmod=slirp, script=slirp.conf
 
 #=======================================================================
 # USB_UHCI:
