@@ -1,8 +1,14 @@
 
+Merging program properties
+
+Removed property 0xc0000002 to merge loadkernel.o (0x3) and bootloader.o (not found)
+
 Discarded input sections
 
  .note.GNU-stack
                 0x0000000000000000        0x0 loadkernel.o
+ .note.gnu.property
+                0x0000000000000000       0x1c loadkernel.o
 
 Memory Configuration
 
@@ -12,19 +18,13 @@ Name             Origin             Length             Attributes
 Linker script and memory map
 
 Address of section .text set to 0x8000
-Address of section .text-segment set to 0x9000
 LOAD bootloader.o
 LOAD loadkernel.o
                 [!provide]                        PROVIDE (__executable_start = SEGMENT_START ("text-segment", 0x8048000))
-                0x0000000000009000                . = (SEGMENT_START ("text-segment", 0x8048000) + SIZEOF_HEADERS)
+                0x0000000008048074                . = (SEGMENT_START ("text-segment", 0x8048000) + SIZEOF_HEADERS)
 
 .interp
  *(.interp)
-
-.note.gnu.property
-                0x0000000000009000       0x1c
- .note.gnu.property
-                0x0000000000009000       0x1c loadkernel.o
 
 .note.gnu.build-id
  *(.note.gnu.build-id)
@@ -80,8 +80,9 @@ LOAD loadkernel.o
 .rel.dtors
  *(.rel.dtors)
 
-.rel.got
+.rel.got        0x0000000008048074        0x0
  *(.rel.got)
+ .rel.got       0x0000000008048074        0x0 bootloader.o
 
 .rel.bss
  *(.rel.bss .rel.bss.* .rel.gnu.linkonce.b.*)
@@ -89,18 +90,20 @@ LOAD loadkernel.o
 .rel.ifunc
  *(.rel.ifunc)
 
-.rel.plt        0x000000000000901c        0x0
+.rel.plt        0x0000000008048074        0x0
  *(.rel.plt)
                 [!provide]                        PROVIDE (__rel_iplt_start = .)
  *(.rel.iplt)
+ .rel.iplt      0x0000000008048074        0x0 bootloader.o
                 [!provide]                        PROVIDE (__rel_iplt_end = .)
 
 .init
  *(SORT_NONE(.init))
 
-.plt
+.plt            0x0000000008048074        0x0
  *(.plt)
  *(.iplt)
+ .iplt          0x0000000008048074        0x0 bootloader.o
 
 .plt.got
  *(.plt.got)
@@ -228,13 +231,16 @@ LOAD loadkernel.o
 .dynamic
  *(.dynamic)
 
-.got
+.got            0x0000000000008d5c        0x0
  *(.got)
+ .got           0x0000000000008d5c        0x0 bootloader.o
  *(.igot)
 
-.got.plt
+.got.plt        0x0000000000008d5c        0x0
  *(.got.plt)
+ .got.plt       0x0000000000008d5c        0x0 bootloader.o
  *(.igot.plt)
+ .igot.plt      0x0000000000008d5c        0x0 bootloader.o
 
 .data           0x0000000000008d5c        0x0
  *(.data .data.* .gnu.linkonce.d.*)
@@ -259,11 +265,13 @@ LOAD loadkernel.o
                 0x0000000000008d5c                _end = .
                 [!provide]                        PROVIDE (end = .)
 
-.stab
+.stab           0x0000000000000000      0x6d8
  *(.stab)
+ .stab          0x0000000000000000      0x6d8 bootloader.o
 
-.stabstr
+.stabstr        0x0000000000000000       0x20
  *(.stabstr)
+ .stabstr       0x0000000000000000       0x20 bootloader.o
 
 .stab.excl
  *(.stab.excl)
@@ -277,9 +285,10 @@ LOAD loadkernel.o
 .stab.indexstr
  *(.stab.indexstr)
 
-.comment        0x0000000000000000       0x2b
+.comment        0x0000000000000000       0x2a
  *(.comment)
- .comment       0x0000000000000000       0x2b loadkernel.o
+ .comment       0x0000000000000000       0x2a loadkernel.o
+                                         0x2b (size before relaxing)
 
 .gnu.build.attributes
  *(.gnu.build.attributes .gnu.build.attributes.*)
@@ -296,26 +305,33 @@ LOAD loadkernel.o
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges
+.debug_aranges  0x0000000000000000       0x20
  *(.debug_aranges)
+ .debug_aranges
+                0x0000000000000000       0x20 loadkernel.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info
+.debug_info     0x0000000000000000      0x53a
  *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x0000000000000000      0x53a loadkernel.o
 
-.debug_abbrev
+.debug_abbrev   0x0000000000000000      0x17f
  *(.debug_abbrev)
+ .debug_abbrev  0x0000000000000000      0x17f loadkernel.o
 
-.debug_line
+.debug_line     0x0000000000000000      0x17e
  *(.debug_line .debug_line.* .debug_line_end)
+ .debug_line    0x0000000000000000      0x17e loadkernel.o
 
 .debug_frame
  *(.debug_frame)
 
-.debug_str
+.debug_str      0x0000000000000000      0x35f
  *(.debug_str)
+ .debug_str     0x0000000000000000      0x35f loadkernel.o
+                                        0x376 (size before relaxing)
 
 .debug_loc
  *(.debug_loc)
@@ -354,4 +370,4 @@ LOAD loadkernel.o
  *(.note.GNU-stack)
  *(.gnu_debuglink)
  *(.gnu.lto_*)
-OUTPUT(bootmgr binary)
+OUTPUT(bootmgr.elf elf32-i386)
