@@ -25,12 +25,12 @@ void readExt2Block(int blockNo, void* buf) {
 }
 
 sInode* getInodeByIndex(int inodeTableStartBlockNo, int inodeIndex, void* buf) {
-    int blockNo = inodeTableStartBlockNo + (inodeIndex-1)/4;
+    int blockNo = inodeTableStartBlockNo + (inodeIndex-1)/8;
 
     int sectorNo = blockNo*2 + partitionStartSectorNo;
     int sectorNum = 2;
     read_ata_sector(sectorNum, sectorNo, buf);
-    return (sInode*)(buf + sizeof(sInode)*((inodeIndex-1)%4));
+    return (sInode*)(buf + sizeof(sInode)*((inodeIndex-1)%8));
 }
 
 unsigned int getKernelInodeIndexFromRootDir(sInode* pRootInode) {
@@ -50,9 +50,15 @@ unsigned int getKernelInodeIndexFromRootDir(sInode* pRootInode) {
     return pDirEntry->inodeIndex;
 }
 
-void loadKernelFileRaw(char * rawKernelBuffer, sInode* pKernelInode) {
+void loadKernelFileRaw(void * rawKernelBuffer, sInode* pKernelInode) {
     char indirectBuf[1024];	
+    if (0 == pKernelInode->size)
+        return;
+
     int fileBlockNum = pKernelInode->size/1024;
+    if ((pKernelInode->size%1024) > 0)
+        fileBlockNum++;
+
     if (fileBlockNum > 12)
         readExt2Block(pKernelInode->blocks[12], indirectBuf);
 
