@@ -1,1 +1,0 @@
-dd if=bootloader  of=a.img oseek=1
