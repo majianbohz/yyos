@@ -2,8 +2,6 @@
 ; Author: majianbo  Date: 2021-02-19
 ; build script: nasm -f bin bootload.s
 
-%include "./common/descriptor.inc" ; 
-
 global _start
 global pRawKernelBuffer
 
@@ -11,6 +9,9 @@ extern loadKernelFromExt2
 
 ;org 08000h    ; ld -Ttext 0x8000 
 
+; =============================
+; =========== 16 bit ==========
+; =============================
 bits 16
 section .text
 _start:       
@@ -34,38 +35,6 @@ _start:
   jmp dword selector_kernel : label_seg_code32
   
 
-; From 0 
-[SECTION .GDT]
-label_GDT: Descriptor 0,0,0
-label_desc_VIDEO: Descriptor 0B8000h, 07fffh, Seg_Data_Attr_4G ; 
-label_desc_KERNEL: Descriptor 0, 0fffffh, Seg_Code_Attr_4G ;
-label_desc_KERNEL_Data: Descriptor 0, 0fffffh, Seg_Data_Attr_4G ; 
-
-gdtLen  equ $ - label_GDT
-gdtPtr  dw gdtLen ;
-        dd 0
-
-selector_video        equ label_desc_VIDEO - label_GDT
-selector_kernel       equ label_desc_KERNEL - label_GDT
-selector_kernel_data  equ label_desc_KERNEL_Data - label_GDT
-
-
-[SECTION .IDT]
-idt_start:
-%rep 255
-      dw isr0      ; dw ISR_OFF cs base addr =>0
-      dw 0x0010
-      db 0x00
-      db 10001110b
-      dw 0x0000
-%endrep
-idt_end:
-
-idt_info:
-    dw idt_end - idt_start - 1
-    dd idt_start
-
-
 ; ===================================
 ; ============ 32 bit ===============
 ; ===================================
@@ -81,11 +50,10 @@ label_seg_code32:
 
    mov ax, selector_video
    mov gs, ax
-   
-   mov edi, (80 * 10 + 0) *2 ;
-   mov ah, 0Ch
-   mov al, 'P'
-   mov [gs:edi], ax
+
+   push enter_protect_mode_tip   
+   call printstr
+   add esp, 4
 
    cli
 
@@ -112,27 +80,56 @@ isr0:
    push esi
    push edi
 
-   mov edi, (80 *10 +10) *2
-   inc byte [gs:edi]
-
    mov al, 020h
    out 020h, al
  
    in al, 060h  
-   mov byte [gs:edi], al 
+   push eax
+   call printc
+   add esp, 4
 
    pop edi
    pop esi
    iretd
 
+
+%include "./common/descriptor.inc" ; 
+%include "./common/print.inc"
 %include "./common/a8259.inc"
-
 %include "./common/ata.inc"
-
-ata_read_param:
-  db  2
-  dd  0  
 
 seg_code32_len equ $ - label_seg_code32
 
+; gdt entry index from 0 
+[SECTION .data]
+label_GDT: Descriptor 0,0,0  ; #0
+label_desc_VIDEO: Descriptor 0B8000h, 07fffh, Seg_Data_Attr_4G ; #1 
+label_desc_KERNEL: Descriptor 0, 0fffffh, Seg_Code_Attr_4G ; #2
+label_desc_KERNEL_Data: Descriptor 0, 0fffffh, Seg_Data_Attr_4G ; #3 
+
+gdtLen  equ $ - label_GDT
+gdtPtr  dw gdtLen ;
+        dd 0
+
+selector_video        equ label_desc_VIDEO - label_GDT
+selector_kernel       equ label_desc_KERNEL - label_GDT
+selector_kernel_data  equ label_desc_KERNEL_Data - label_GDT
+
+
+idt_start:
+%rep 255
+      dw isr0      ; dw ISR_OFF cs base addr =>0
+      dw 0x0010
+      db 0x00
+      db 10001110b
+      dw 0x0000
+%endrep
+idt_end:
+
+idt_info:
+    dw idt_end - idt_start - 1
+    dd idt_start
+
+enter_protect_mode_tip db "enter protect mode..." ;
 pRawKernelBuffer dd  01000000h
+

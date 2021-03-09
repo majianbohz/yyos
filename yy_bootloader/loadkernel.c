@@ -4,6 +4,7 @@ extern void* pRawKernelBuffer;
 
 const int partitionStartSectorNo = 63;
 
+// todo: should use cmps
 int compareString(unsigned char* str1, unsigned char* str2) {
      int true = 1;
      int false = 0;     
