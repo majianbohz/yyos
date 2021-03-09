@@ -1,7 +1,0 @@
-#
-# use c.img by loop device
-#
-losetup  -f --show --partscan c.img
-fdisk /dev/loop?
-mount /dev/loop?p?  /mydir
-
