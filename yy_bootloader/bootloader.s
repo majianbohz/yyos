@@ -63,7 +63,7 @@ label_seg_code32:
    
    int 0x3
 
-   sti
+  sti
 
   ; push dword 0a000h
   ; push dword 0
@@ -73,7 +73,8 @@ label_seg_code32:
 
    call loadKernelFromExt2
 
-   jmp $
+  ; jump to kernel !!
+   jmp selector_kernel:Kernel_Entry
 
 ;ISR_OFF  equ $ - $$    ; get offset in current section
 isr0:
@@ -94,9 +95,9 @@ isr0:
 
 
 %include "./common/descriptor.inc" ; 
-%include "./common/print.inc"
-%include "./common/a8259.inc"
-%include "./common/ata.inc"
+%include "./common/print.s"
+%include "./common/a8259.s"
+%include "./common/ata.s"
 
 seg_code32_len equ $ - label_seg_code32
 
@@ -131,5 +132,6 @@ idt_info:
     dd idt_start
 
 enter_protect_mode_tip db "enter protect mode..." ;
-pRawKernelBuffer dd  01000000h
+pRawKernelBuffer dd   0100000h
+Kernel_Entry     equ  0100000h
 

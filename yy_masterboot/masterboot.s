@@ -59,7 +59,7 @@ jc err
 success:
 mov byte [4], 'S'   ; success
 mov byte [5], 0x2f
-jmp LOAD_OFF
+jmp LOAD_OFF        ; jump to boot loader !!
 
 err:
 mov byte [4], 'F'   ; fail

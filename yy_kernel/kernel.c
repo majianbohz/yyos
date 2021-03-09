@@ -1,9 +1,11 @@
 // yyos kernel
 
-extern void print(char * msg); 
+extern void printstr(char * msg); 
+extern void setprintline(int lineNo);
 
-void start() {
-    print("enter yyos kernel...");
+void _start() {
+    setprintline(3);
+    printstr("enter yyos kernel...");
 
     while (1) {}
 }
