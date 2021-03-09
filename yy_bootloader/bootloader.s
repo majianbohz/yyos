@@ -2,7 +2,7 @@
 ; Author: majianbo  Date: 2021-02-19
 ; build script: nasm -f bin bootload.s
 
-%include "descriptor.inc" ; 
+%include "./common/descriptor.inc" ; 
 
 global _start
 global pRawKernelBuffer
@@ -125,9 +125,9 @@ isr0:
    pop esi
    iretd
 
-%include "a8259.inc"
+%include "./common/a8259.inc"
 
-%include "ata.inc"
+%include "./common/ata.inc"
 
 ata_read_param:
   db  2

@@ -1,4 +1,4 @@
-#include "ext2.h"
+#include "../common/ext2.h"
 extern void read_ata_sector(int sectorNum, int sectorNo, void* buf);
 extern void* pRawKernelBuffer;
 
