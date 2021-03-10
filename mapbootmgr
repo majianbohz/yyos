@@ -111,25 +111,26 @@ LOAD loadkernel.o
 .plt.sec
  *(.plt.sec)
 
-.text           0x0000000000008000      0x4bc
+.text           0x0000000000008000      0x4cf
  *(.text.unlikely .text.*_unlikely .text.unlikely.*)
  *(.text.exit .text.exit.*)
  *(.text.startup .text.startup.*)
  *(.text.hot .text.hot.*)
  *(SORT_BY_NAME(.text.sorted.*))
  *(.text .stub .text.* .gnu.linkonce.t.*)
- .text          0x0000000000008000      0x198 bootloader.o
+ .text          0x0000000000008000      0x1ab bootloader.o
                 0x0000000000008000                _start
                 0x0000000000008080                printstr
                 0x00000000000080a8                printc
-                0x00000000000080ff                read_ata_sector
- .text          0x0000000000008198      0x324 loadkernel.o
-                0x0000000000008198                compareString
-                0x00000000000081f7                readExt2Block
-                0x0000000000008230                getInodeByIndex
-                0x000000000000829c                getKernelInodeIndexFromRootDir
-                0x0000000000008345                loadKernelFileRaw
-                0x0000000000008424                loadKernelFromExt2
+                0x00000000000080c7                setprintline
+                0x0000000000008112                read_ata_sector
+ .text          0x00000000000081ab      0x324 loadkernel.o
+                0x00000000000081ab                compareString
+                0x000000000000820a                readExt2Block
+                0x0000000000008243                getInodeByIndex
+                0x00000000000082af                getKernelInodeIndexFromRootDir
+                0x0000000000008358                loadKernelFileRaw
+                0x0000000000008437                loadKernelFromExt2
  *(.gnu.warning)
 
 .fini
@@ -138,10 +139,10 @@ LOAD loadkernel.o
                 [!provide]                        PROVIDE (_etext = .)
                 [!provide]                        PROVIDE (etext = .)
 
-.rodata         0x00000000000084bc        0xb
+.rodata         0x00000000000084d0        0xb
  *(.rodata .rodata.* .gnu.linkonce.r.*)
- .rodata        0x00000000000084bc        0xb loadkernel.o
-                0x00000000000084bc                partitionStartSectorNo
+ .rodata        0x00000000000084d0        0xb loadkernel.o
+                0x00000000000084d0                partitionStartSectorNo
 
 .rodata1
  *(.rodata1)
@@ -150,9 +151,9 @@ LOAD loadkernel.o
  *(.eh_frame_hdr)
  *(.eh_frame_entry .eh_frame_entry.*)
 
-.eh_frame       0x00000000000084c8       0xd8
+.eh_frame       0x00000000000084dc       0xd8
  *(.eh_frame)
- .eh_frame      0x00000000000084c8       0xd8 loadkernel.o
+ .eh_frame      0x00000000000084dc       0xd8 loadkernel.o
  *(.eh_frame.*)
 
 .gcc_except_table
@@ -163,7 +164,7 @@ LOAD loadkernel.o
 
 .exception_ranges
  *(.exception_ranges*)
-                0x00000000000085a0                . = .
+                0x00000000000085b4                . = .
 
 .eh_frame
  *(.eh_frame)
@@ -178,7 +179,7 @@ LOAD loadkernel.o
 .exception_ranges
  *(.exception_ranges*)
 
-.tdata          0x00000000000085a0        0x0
+.tdata          0x00000000000085b4        0x0
                 [!provide]                        PROVIDE (__tdata_start = .)
  *(.tdata .tdata.* .gnu.linkonce.td.*)
 
@@ -186,18 +187,18 @@ LOAD loadkernel.o
  *(.tbss .tbss.* .gnu.linkonce.tb.*)
  *(.tcommon)
 
-.preinit_array  0x00000000000085a0        0x0
+.preinit_array  0x00000000000085b4        0x0
                 [!provide]                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array)
                 [!provide]                        PROVIDE (__preinit_array_end = .)
 
-.init_array     0x00000000000085a0        0x0
+.init_array     0x00000000000085b4        0x0
                 [!provide]                        PROVIDE (__init_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*))
  *(.init_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .ctors)
                 [!provide]                        PROVIDE (__init_array_end = .)
 
-.fini_array     0x00000000000085a0        0x0
+.fini_array     0x00000000000085b4        0x0
                 [!provide]                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*))
  *(.fini_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .dtors)
@@ -227,45 +228,45 @@ LOAD loadkernel.o
 .dynamic
  *(.dynamic)
 
-.got            0x00000000000085a0        0x0
+.got            0x00000000000085b4        0x0
  *(.got)
- .got           0x00000000000085a0        0x0 bootloader.o
+ .got           0x00000000000085b4        0x0 bootloader.o
  *(.igot)
 
-.got.plt        0x00000000000085a0        0x0
+.got.plt        0x00000000000085b4        0x0
  *(.got.plt)
- .got.plt       0x00000000000085a0        0x0 bootloader.o
+ .got.plt       0x00000000000085b4        0x0 bootloader.o
  *(.igot.plt)
- .igot.plt      0x00000000000085a0        0x0 bootloader.o
+ .igot.plt      0x00000000000085b4        0x0 bootloader.o
 
-.data           0x00000000000085a0      0x83d
+.data           0x00000000000085b4      0x83d
  *(.data .data.* .gnu.linkonce.d.*)
- .data          0x00000000000085a0      0x83d bootloader.o
-                0x0000000000008dd9                pRawKernelBuffer
- .data          0x0000000000008ddd        0x0 loadkernel.o
+ .data          0x00000000000085b4      0x83d bootloader.o
+                0x0000000000008ded                pRawKernelBuffer
+ .data          0x0000000000008df1        0x0 loadkernel.o
 
 .data1
  *(.data1)
-                0x0000000000008ddd                _edata = .
+                0x0000000000008df1                _edata = .
                 [!provide]                        PROVIDE (edata = .)
-                0x0000000000008ddd                . = .
-                0x0000000000008ddd                __bss_start = .
+                0x0000000000008df1                . = .
+                0x0000000000008df1                __bss_start = .
 
-.bss            0x0000000000008ddd        0x0
+.bss            0x0000000000008df1        0x0
  *(.dynbss)
  *(.bss .bss.* .gnu.linkonce.b.*)
- .bss           0x0000000000008ddd        0x0 loadkernel.o
+ .bss           0x0000000000008df1        0x0 loadkernel.o
  *(COMMON)
-                0x0000000000008ddd                . = ALIGN ((. != 0x0)?0x4:0x1)
-                0x0000000000008de0                . = ALIGN (0x4)
-                0x0000000000008de0                . = SEGMENT_START ("ldata-segment", .)
-                0x0000000000008de0                . = ALIGN (0x4)
-                0x0000000000008de0                _end = .
+                0x0000000000008df1                . = ALIGN ((. != 0x0)?0x4:0x1)
+                0x0000000000008df4                . = ALIGN (0x4)
+                0x0000000000008df4                . = SEGMENT_START ("ldata-segment", .)
+                0x0000000000008df4                . = ALIGN (0x4)
+                0x0000000000008df4                _end = .
                 [!provide]                        PROVIDE (end = .)
 
-.stab           0x0000000000000000      0x804
+.stab           0x0000000000000000      0x870
  *(.stab)
- .stab          0x0000000000000000      0x804 bootloader.o
+ .stab          0x0000000000000000      0x870 bootloader.o
 
 .stabstr        0x0000000000000000       0x4d
  *(.stabstr)

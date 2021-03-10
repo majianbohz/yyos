@@ -1,7 +1,9 @@
-rm -f *.o kernel 
-nasm -g -f elf32  -o print.o  common/print.s
+rm -f *.o kernel kernel.elf 
+nasm -g -f elf32  -o print.o  common/print.s 
+nasm -g -f elf32  -o switchgdt.o  yy_kernel/switchgdt.s
 gcc -g -march=i386 -m32 -ffreestanding -fno-pie  -c yy_kernel/kernel.c 
-ld -melf_i386 -N -Ttext 0x100000 -Map mapkernel -o kernel.elf  kernel.o  print.o
+gcc -g -march=i386 -m32 -ffreestanding -fno-pie  -c yy_kernel/gdt.c
+ld -melf_i386 -N -Ttext 0x100000 -Map mapkernel -o kernel.elf  kernel.o  print.o gdt.o switchgdt.o 
 objcopy -O binary kernel.elf kernel
 cp -f kernel cimg/
 hexdump -C kernel

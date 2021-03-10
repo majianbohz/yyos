@@ -2,6 +2,13 @@
 Merging program properties
 
 Removed property 0xc0000002 to merge kernel.o (0x3) and print.o (not found)
+Removed property 0xc0000002 to merge kernel.o (not found) and gdt.o (0x3)
+
+Allocating common symbols
+Common symbol       size              file
+
+gdt                 0x40              gdt.o
+gdt_ptr             0x6               gdt.o
 
 Discarded input sections
 
@@ -9,6 +16,10 @@ Discarded input sections
                 0x0000000000000000        0x0 kernel.o
  .note.gnu.property
                 0x0000000000000000       0x1c kernel.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 gdt.o
+ .note.gnu.property
+                0x0000000000000000       0x1c gdt.o
 
 Memory Configuration
 
@@ -20,6 +31,8 @@ Linker script and memory map
 Address of section .text set to 0x100000
 LOAD kernel.o
 LOAD print.o
+LOAD gdt.o
+LOAD switchgdt.o
                 [!provide]                        PROVIDE (__executable_start = SEGMENT_START ("text-segment", 0x8048000))
                 0x0000000008048074                . = (SEGMENT_START ("text-segment", 0x8048000) + SIZEOF_HEADERS)
 
@@ -53,8 +66,9 @@ LOAD print.o
 .rel.init
  *(.rel.init)
 
-.rel.text
+.rel.text       0x0000000008048074        0x0
  *(.rel.text .rel.text.* .rel.gnu.linkonce.t.*)
+ .rel.text      0x0000000008048074        0x0 kernel.o
 
 .rel.fini
  *(.rel.fini)
@@ -111,20 +125,26 @@ LOAD print.o
 .plt.sec
  *(.plt.sec)
 
-.text           0x0000000000100000       0x8e
+.text           0x0000000000100000      0x263
  *(.text.unlikely .text.*_unlikely .text.unlikely.*)
  *(.text.exit .text.exit.*)
  *(.text.startup .text.startup.*)
  *(.text.hot .text.hot.*)
  *(SORT_BY_NAME(.text.sorted.*))
  *(.text .stub .text.* .gnu.linkonce.t.*)
- .text          0x0000000000100000       0x29 kernel.o
+ .text          0x0000000000100000       0x2e kernel.o
                 0x0000000000100000                _start
- *fill*         0x0000000000100029        0x7 
+ *fill*         0x000000000010002e        0x2 
  .text          0x0000000000100030       0x5e print.o
                 0x0000000000100030                printstr
                 0x0000000000100058                printc
                 0x0000000000100077                setprintline
+ .text          0x000000000010008e      0x1a5 gdt.o
+                0x000000000010008e                init_gdt
+                0x000000000010017e                set_descriptor
+ *fill*         0x0000000000100233        0xd 
+ .text          0x0000000000100240       0x23 switchgdt.o
+                0x0000000000100240                switch_gdt
  *(.gnu.warning)
 
 .fini
@@ -133,9 +153,9 @@ LOAD print.o
                 [!provide]                        PROVIDE (_etext = .)
                 [!provide]                        PROVIDE (etext = .)
 
-.rodata         0x000000000010008e       0x15
+.rodata         0x0000000000100263       0x15
  *(.rodata .rodata.* .gnu.linkonce.r.*)
- .rodata        0x000000000010008e       0x15 kernel.o
+ .rodata        0x0000000000100263       0x15 kernel.o
 
 .rodata1
  *(.rodata1)
@@ -144,9 +164,11 @@ LOAD print.o
  *(.eh_frame_hdr)
  *(.eh_frame_entry .eh_frame_entry.*)
 
-.eh_frame       0x00000000001000a4       0x34
+.eh_frame       0x0000000000100278       0x74
  *(.eh_frame)
- .eh_frame      0x00000000001000a4       0x34 kernel.o
+ .eh_frame      0x0000000000100278       0x34 kernel.o
+ .eh_frame      0x00000000001002ac       0x40 gdt.o
+                                         0x58 (size before relaxing)
  *(.eh_frame.*)
 
 .gcc_except_table
@@ -157,7 +179,7 @@ LOAD print.o
 
 .exception_ranges
  *(.exception_ranges*)
-                0x00000000001000d8                . = .
+                0x00000000001002ec                . = .
 
 .eh_frame
  *(.eh_frame)
@@ -172,7 +194,7 @@ LOAD print.o
 .exception_ranges
  *(.exception_ranges*)
 
-.tdata          0x00000000001000d8        0x0
+.tdata          0x00000000001002ec        0x0
                 [!provide]                        PROVIDE (__tdata_start = .)
  *(.tdata .tdata.* .gnu.linkonce.td.*)
 
@@ -180,18 +202,18 @@ LOAD print.o
  *(.tbss .tbss.* .gnu.linkonce.tb.*)
  *(.tcommon)
 
-.preinit_array  0x00000000001000d8        0x0
+.preinit_array  0x00000000001002ec        0x0
                 [!provide]                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array)
                 [!provide]                        PROVIDE (__preinit_array_end = .)
 
-.init_array     0x00000000001000d8        0x0
+.init_array     0x00000000001002ec        0x0
                 [!provide]                        PROVIDE (__init_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*))
  *(.init_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .ctors)
                 [!provide]                        PROVIDE (__init_array_end = .)
 
-.fini_array     0x00000000001000d8        0x0
+.fini_array     0x00000000001002ec        0x0
                 [!provide]                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*))
  *(.fini_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .dtors)
@@ -221,47 +243,55 @@ LOAD print.o
 .dynamic
  *(.dynamic)
 
-.got            0x00000000001000d8        0x0
+.got            0x00000000001002ec        0x0
  *(.got)
- .got           0x00000000001000d8        0x0 kernel.o
+ .got           0x00000000001002ec        0x0 kernel.o
  *(.igot)
 
-.got.plt        0x00000000001000d8        0x0
+.got.plt        0x00000000001002ec        0x0
  *(.got.plt)
- .got.plt       0x00000000001000d8        0x0 kernel.o
+ .got.plt       0x00000000001002ec        0x0 kernel.o
  *(.igot.plt)
- .igot.plt      0x00000000001000d8        0x0 kernel.o
+ .igot.plt      0x00000000001002ec        0x0 kernel.o
 
-.data           0x00000000001000d8        0x0
+.data           0x00000000001002ec        0x0
  *(.data .data.* .gnu.linkonce.d.*)
- .data          0x00000000001000d8        0x0 kernel.o
+ .data          0x00000000001002ec        0x0 kernel.o
+ .data          0x00000000001002ec        0x0 gdt.o
 
 .data1
  *(.data1)
-                0x00000000001000d8                _edata = .
+                0x00000000001002ec                _edata = .
                 [!provide]                        PROVIDE (edata = .)
-                0x00000000001000d8                . = .
-                0x00000000001000d8                __bss_start = .
+                0x00000000001002ec                . = .
+                0x00000000001002ec                __bss_start = .
 
-.bss            0x00000000001000d8        0x0
+.bss            0x0000000000100300       0x48
  *(.dynbss)
  *(.bss .bss.* .gnu.linkonce.b.*)
- .bss           0x00000000001000d8        0x0 kernel.o
+ .bss           0x0000000000100300        0x0 kernel.o
+ .bss           0x0000000000100300        0x0 gdt.o
  *(COMMON)
-                0x00000000001000d8                . = ALIGN ((. != 0x0)?0x4:0x1)
-                0x00000000001000d8                . = ALIGN (0x4)
-                0x00000000001000d8                . = SEGMENT_START ("ldata-segment", .)
-                0x00000000001000d8                . = ALIGN (0x4)
-                0x00000000001000d8                _end = .
+ COMMON         0x0000000000100300       0x46 gdt.o
+                0x0000000000100300                gdt
+                0x0000000000100340                gdt_ptr
+                0x0000000000100348                . = ALIGN ((. != 0x0)?0x4:0x1)
+ *fill*         0x0000000000100346        0x2 
+                0x0000000000100348                . = ALIGN (0x4)
+                0x0000000000100348                . = SEGMENT_START ("ldata-segment", .)
+                0x0000000000100348                . = ALIGN (0x4)
+                0x0000000000100348                _end = .
                 [!provide]                        PROVIDE (end = .)
 
-.stab           0x0000000000000000      0x1e0
+.stab           0x0000000000000000      0x294
  *(.stab)
  .stab          0x0000000000000000      0x1e0 print.o
+ .stab          0x00000000000001e0       0xb4 switchgdt.o
+                                         0xc0 (size before relaxing)
 
-.stabstr        0x0000000000000000       0x10
+.stabstr        0x0000000000000000       0x26
  *(.stabstr)
- .stabstr       0x0000000000000000       0x10 print.o
+ .stabstr       0x0000000000000000       0x26 print.o
 
 .stab.excl
  *(.stab.excl)
@@ -279,6 +309,7 @@ LOAD print.o
  *(.comment)
  .comment       0x0000000000000000       0x2a kernel.o
                                          0x2b (size before relaxing)
+ .comment       0x000000000000002a       0x2b gdt.o
 
 .gnu.build.attributes
  *(.gnu.build.attributes .gnu.build.attributes.*)
@@ -295,32 +326,39 @@ LOAD print.o
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x0000000000000000       0x20
+.debug_aranges  0x0000000000000000       0x40
  *(.debug_aranges)
  .debug_aranges
                 0x0000000000000000       0x20 kernel.o
+ .debug_aranges
+                0x0000000000000020       0x20 gdt.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000       0x38
+.debug_info     0x0000000000000000      0x1dd
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x0000000000000000       0x38 kernel.o
+ .debug_info    0x0000000000000038      0x1a5 gdt.o
 
-.debug_abbrev   0x0000000000000000       0x2c
+.debug_abbrev   0x0000000000000000      0x12e
  *(.debug_abbrev)
  .debug_abbrev  0x0000000000000000       0x2c kernel.o
+ .debug_abbrev  0x000000000000002c      0x102 gdt.o
 
-.debug_line     0x0000000000000000       0x4d
+.debug_line     0x0000000000000000       0xe5
  *(.debug_line .debug_line.* .debug_line_end)
- .debug_line    0x0000000000000000       0x4d kernel.o
+ .debug_line    0x0000000000000000       0x4e kernel.o
+ .debug_line    0x000000000000004e       0x97 gdt.o
 
 .debug_frame
  *(.debug_frame)
 
-.debug_str      0x0000000000000000       0xab
+.debug_str      0x0000000000000000      0x17e
  *(.debug_str)
  .debug_str     0x0000000000000000       0xab kernel.o
+ .debug_str     0x00000000000000ab       0xd3 gdt.o
+                                        0x171 (size before relaxing)
 
 .debug_loc
  *(.debug_loc)
