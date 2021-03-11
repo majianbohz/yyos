@@ -3,9 +3,10 @@
 ; -------------------------------------------------
 
 GLOBAL switch_gdt
+global switch_idt
 
 switch_gdt:
-        sti
+    sti
 
 	mov eax, [esp+4]  ; 参数gdt_ptr 存入 eax 寄存器
 	lgdt [eax]        ; 加载到 GDTR 
@@ -22,6 +23,14 @@ switch_gdt:
 	jmp 0x08:.switch_gdt_stub   ; 远跳转，0x08是我们的代码段描述符
                                     ; 远跳目的是清空流水线并串行化处理器
 .switch_gdt_stub:
-        cli
+    cli
 	ret
 
+switch_idt:
+    sti
+
+	mov eax, [esp+4]  ; 参数 idt_ptr 存入 eax 寄存器
+	lidt [eax]        ; 加载到 IDTR 	
+
+    cli
+	ret

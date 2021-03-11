@@ -9,6 +9,13 @@ DESCRIPTOR_ENTRY gdt[GDT_LENGTH];
 // GDTR
 GDT_PTR gdt_ptr;
 
+#define LDT_LENGTH 256
+IDTDescr idt[LDT_LENGTH];
+
+// IDTR
+IDT_PTR idt_ptr;
+
+extern unsigned int isr0;
 
 // 声明内核栈地址
 extern unsigned int  stack;
@@ -34,10 +41,21 @@ void init_gdt()
 	set_descriptor(5, 0, 0xFFFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 2#用户进程指令段
 	set_descriptor(6, 0, 0xFFFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 2#用户进程数据段
 	
-        set_descriptor(7, 0xB8000, 0x3E80, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_BYTE); 	// 
+    set_descriptor(7, 0xB8000, 0x3E80, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_BYTE); 	// 
 
 	// 加载全局描述符表地址到 GPTR 寄存器
-        switch_gdt(&gdt_ptr);
+    switch_gdt(&gdt_ptr);
+}
+
+void init_idt() 
+{
+	for (int i=0; i<LDT_LENGTH; i++) {
+		set_idt_descriptor(i, isr0, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+	}
+	
+	idt_ptr.limit = sizeof(IDTDescr) * LDT_LENGTH - 1;
+	idt_ptr.base = (unsigned int)&idt;
+	switch_idt(&idt_ptr);
 }
 
 void set_descriptor(int index, unsigned int  base, unsigned int limit, unsigned char attr, unsigned char gran)
@@ -49,7 +67,16 @@ void set_descriptor(int index, unsigned int  base, unsigned int limit, unsigned 
 	gdt[index].limit_low    = (limit & 0xFFFF);
 	gdt[index].limit_hight  = (limit >> 16) & 0x0F;
 
-	gdt[index].attr_low     = attr + 0x80;  //0x80 -> P 段存在标记
-	gdt[index].attr_high    = gran + 0x4;   // D/B =1 32位   
+	gdt[index].attr_low     = attr | 0x80;  //0x80 -> P 段存在标记
+	gdt[index].attr_high    = gran | 0x4;   // 0x4 -> D/B 32位   
+}
+
+void set_idt_descriptor(int index, unsigned int offset, unsigned short selector, unsigned char type_attr) 
+{
+	idt[index].offset_1 = offset & 0x0000ffff;
+	idt[index].offset_2 = offset>>16 & 0x0000ffff;
+	idt[index].selector = selector;
+	idt[index].zero = 0;
+	idt[index].type_attr = type_attr | 0X80;  //0x80 -> P 段存在标记
 }
 
