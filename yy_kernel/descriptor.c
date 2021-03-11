@@ -10,15 +10,48 @@ DESCRIPTOR_ENTRY gdt[GDT_LENGTH];
 GDT_PTR gdt_ptr;
 
 #define IDT_LENGTH 256
-IDTDescr idt[LDT_LENGTH];
+IDTDescr idt[IDT_LENGTH];
 
 // IDTR
 IDT_PTR idt_ptr;
 
-extern void *isr0, *isr1, *isr2, *isr3, *isr4, *isr5, *isr6, *isr7, *isr8, *isr9;
-extern void *isr10, *isr11, *isr12, *isr13, *isr14, *isr15, *isr16, *isr17, *isr18, *isr19;
-extern void *isr32, *isr33, *isr34, *isr35, *isr36, *isr37, *isr38, *isr39;
-extern void *isr40, *isr41, *isr42, *isr43, *isr44, *isr45, *isr46, *isr47, *isrx; 
+extern void isrx();
+extern void isr0();
+extern void isr1();
+extern void isr2(); 
+extern void isr3();
+extern void isr4();
+extern void isr5();
+extern void isr6(); 
+extern void isr7();
+extern void isr8();
+extern void isr9();
+extern void isr10();
+extern void isr11(); 
+extern void isr12(); 
+extern void isr13(); 
+extern void isr14(); 
+extern void isr15(); 
+extern void isr16(); 
+extern void isr17(); 
+extern void isr18(); 
+extern void isr19();
+extern void isr32(); 
+extern void isr33(); 
+extern void isr34(); 
+extern void isr35(); 
+extern void isr36(); 
+extern void isr37(); 
+extern void isr38(); 
+extern void isr39();
+extern void isr40(); 
+extern void isr41(); 
+extern void isr42(); 
+extern void isr43(); 
+extern void isr44(); 
+extern void isr45(); 
+extern void isr46(); 
+extern void isr47(); 
 
 // 声明内核栈地址
 extern unsigned int  stack;
@@ -28,7 +61,7 @@ extern void switch_idt(void* pgdtptr);
 
 
 void set_descriptor(int index, unsigned int  base, unsigned int limit, unsigned char attr, unsigned char gran);
-void set_idt_descriptor(int index, unsigned int offset, unsigned short selector, unsigned char type_attr); 
+void set_idt_descriptor(int index, void *offset, unsigned short selector, unsigned char type_attr); 
 
 // 初始化全局描述符表
 void init_gdt()
@@ -55,11 +88,11 @@ void init_gdt()
 void init_idt() 
 {
   for (int i=20; i<=31; i++) {
-    set_idt_descriptor(i, isrx, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+    set_idt_descriptor(i, &isrx, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
   }
 
-  for (int i=48; i<LDT_LENGTH; i++) {
-    set_idt_descriptor(i, isrx, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  for (int i=48; i<IDT_LENGTH; i++) {
+    set_idt_descriptor(i, &isrx, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
   }
 
     set_idt_descriptor(0, isr0, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
@@ -118,10 +151,11 @@ void set_descriptor(int index, unsigned int  base, unsigned int limit, unsigned 
 	gdt[index].attr_high    = gran | 0x4;   // 0x4 -> D/B 32位   
 }
 
-void set_idt_descriptor(int index, unsigned int offset, unsigned short selector, unsigned char type_attr) 
+void set_idt_descriptor(int index, void * offset, unsigned short selector, unsigned char type_attr) 
 {
-	idt[index].offset_1 = offset & 0x0000ffff;
-	idt[index].offset_2 = offset>>16 & 0x0000ffff;
+        unsigned int base = (unsigned int)offset;
+	idt[index].offset_1 = base & 0x0000ffff;
+	idt[index].offset_2 = (base >> 16) & 0x0000ffff;
 	idt[index].selector = selector;
 	idt[index].zero = 0;
 	idt[index].type_attr = type_attr | 0X80;  //0x80 -> P 段存在标记
