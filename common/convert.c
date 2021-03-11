@@ -2,7 +2,7 @@
 void convertInt2Str(int myInt, char* str) 
 {
   char c = 0;
-  for (int i=7; i>=0; i++) 
+  for (int i=7; i>=0; i--) 
   {	
     c = myInt>>(i*4) && 0x0f;
     if (c > 9)

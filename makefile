@@ -17,13 +17,13 @@ LDFLAGS_KERNEL  = -melf_i386 -N -Ttext 0x100000 -Map mapkernel
 
 
 # Target 
-TARGET  = masterboot bootloader kernel
+TARGET  = masterboot bootloader.elf  kernel.elf
 
 # All Phony Targets
-.PHONY : default clean_target clean_obj kernel 
+.PHONY : default clean 
 
 
-default : clean  masterboot bootloader kernel
+default : clean  masterboot bootloader.elf  kernel.elf
 
 clean : 
 	rm -f $(TARGET) *.o
@@ -32,15 +32,15 @@ masterboot : yy_masterboot/*.s
 	$(ASM) $(ASMFLAGS_BIN) -o $@ yy_masterboot/*.s
 	dd conv=notrunc if=masterboot of=c.img count=1
   
-bootloader : yy_bootloader/*.s yy_bootloader/*.c
+bootloader.elf : yy_bootloader/*.s yy_bootloader/*.c
 	rm -f *.o
 	$(ASM) $(ASMFLAGS_ELF) -o bootloader.o yy_bootloader/bootloader.s
 	$(CC)  $(CCFLAGS)  -o loadkernel.o yy_bootloader/loadkernel.c
-	$(LD)  $(LDFLAGS_BOOTLOADER)  -o $@.elf *.o
-	objcopy -O binary bootloader.elf bootloader
+	$(LD)  $(LDFLAGS_BOOTLOADER)  -o $@  bootloader.o loadkernel.o  # bootloader.o must put first, affect binary file out
+	objcopy -O binary $@  bootloader
 	dd conv=notrunc if=bootloader of=c.img seek=1
   
-kernel : yy_kernel/*.s yy_kernel/*.c
+kernel.elf : yy_kernel/*.s yy_kernel/*.c
 	rm -f *.o
 	$(ASM) $(ASMFLAGS_ELF) -o switchdescriptortable.o yy_kernel/switchdescriptortable.s
 	$(ASM) $(ASMFLAGS_ELF) -o interrupt.o yy_kernel/interrupt.s
@@ -48,7 +48,7 @@ kernel : yy_kernel/*.s yy_kernel/*.c
 	$(CC)  $(CCFLAGS)  -o kernel.o yy_kernel/kernel.c
 	$(CC)  $(CCFLAGS)  -o descriptor.o yy_kernel/descriptor.c
 	$(CC)  $(CCFLAGS)  -o convert.o common/convert.c
-	$(LD)  $(LDFLAGS_KERNEL)  -o $@.elf *.o
-	objcopy -O binary kernel.elf kernel
+	$(LD)  $(LDFLAGS_KERNEL)  -o $@  kernel.o  print.o descriptor.o switchdescriptortable.o interrupt.o convert.o # kernel.o must put first, affect binary file out
+	objcopy -O binary $@  kernel
 	cp -f kernel cimg/
 
