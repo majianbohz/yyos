@@ -9,13 +9,16 @@ DESCRIPTOR_ENTRY gdt[GDT_LENGTH];
 // GDTR
 GDT_PTR gdt_ptr;
 
-#define LDT_LENGTH 256
+#define IDT_LENGTH 256
 IDTDescr idt[LDT_LENGTH];
 
 // IDTR
 IDT_PTR idt_ptr;
 
-extern unsigned int  isr0, isr1, isr2, isr3, isr4, isr5, isr6, isr7, isr8, isr9, isr10, isr11, isr12, isr13, isr14, isr15, isr16, isr17, isr18, isr19, isr32, isr33, isr34, isr35, isr36, isr37, isr38, isr39, isr40, isr41, isr42, isr43, isr44, isr45, isr46, isr47, isrx; 
+extern void *isr0, *isr1, *isr2, *isr3, *isr4, *isr5, *isr6, *isr7, *isr8, *isr9;
+extern void *isr10, *isr11, *isr12, *isr13, *isr14, *isr15, *isr16, *isr17, *isr18, *isr19;
+extern void *isr32, *isr33, *isr34, *isr35, *isr36, *isr37, *isr38, *isr39;
+extern void *isr40, *isr41, *isr42, *isr43, *isr44, *isr45, *isr46, *isr47, *isrx; 
 
 // 声明内核栈地址
 extern unsigned int  stack;
@@ -97,7 +100,7 @@ void init_idt()
     set_idt_descriptor(46, isrx, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
     set_idt_descriptor(47, isrx, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
 
-  idt_ptr.limit = sizeof(IDTDescr) * LDT_LENGTH - 1;
+  idt_ptr.limit = sizeof(IDTDescr) * IDT_LENGTH - 1;
   idt_ptr.base = (unsigned int)&idt;
   switch_idt(&idt_ptr);
 }
