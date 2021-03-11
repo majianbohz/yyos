@@ -514,19 +514,6 @@ isr47:
    iretd
  
 ;
-isr48:
-   push esi
-   push edi
-
-   push 48   ; 32 bit
-   call c_isr
-   add esp, 4
-   
-   pop edi
-   pop esi
-   iretd
- 
-;
 isrx:
    push esi
    push edi
