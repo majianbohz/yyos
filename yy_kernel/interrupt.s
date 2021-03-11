@@ -1,7 +1,7 @@
 ;
 ; 
 ;
-
+global isr0, isr1, isr2, isr3
 extern c_isr ;
 
 ; 

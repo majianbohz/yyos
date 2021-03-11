@@ -1,4 +1,4 @@
-#include "gdt.h"
+#include "descriptor.h"
 
 // 全局描述符表长度
 #define GDT_LENGTH 8
@@ -21,9 +21,11 @@ extern unsigned int isr0;
 extern unsigned int  stack;
 
 extern void switch_gdt(void* pgdtptr);
+extern void switch_idt(void* pgdtptr);
 
 
 void set_descriptor(int index, unsigned int  base, unsigned int limit, unsigned char attr, unsigned char gran);
+void set_idt_descriptor(int index, unsigned int offset, unsigned short selector, unsigned char type_attr); 
 
 // 初始化全局描述符表
 void init_gdt()

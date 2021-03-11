@@ -8,7 +8,7 @@ void convertInt2Str(int myInt, char* str)
     if (c > 9)
       *str++ = c + 0x37;
     else
-	  *str++ = c + 0x30
+      *str++ = c + 0x30;
   }
   *str = 0;	 
 }
