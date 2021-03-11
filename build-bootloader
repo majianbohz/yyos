@@ -1,0 +1,9 @@
+rm -f *.o bootloader
+nasm -g -f elf32  -o bootloader.o  yy_bootloader/bootloader.s
+gcc -g -march=i386 -m32 -ffreestanding -fno-pie  -c yy_bootloader/loadkernel.c 
+#ld -g -melf_i386 -N -Ttext 0x8000 -Ttext-segment 0x9000 --oformat binary -Map mymap --verbose -o bootloader bootloader.o loadkernel.o
+ld -melf_i386 -N -Ttext 0x8000 -Map mapbootloader -o bootloader.elf  bootloader.o loadkernel.o
+objcopy -O binary bootloader.elf bootloader
+dd conv=notrunc if=bootloader of=c.img seek=1
+hexdump -C bootloader
+
