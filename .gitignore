@@ -60,3 +60,5 @@ cimg/
 mymap
 *.udb
 mapbootloader
+mapkernel
+

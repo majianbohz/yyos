@@ -135,75 +135,76 @@ LOAD port.o
 .plt.sec
  *(.plt.sec)
 
-.text           0x0000000000100000      0x990
+.text           0x0000000000100000      0xa30
  *(.text.unlikely .text.*_unlikely .text.unlikely.*)
  *(.text.exit .text.exit.*)
  *(.text.startup .text.startup.*)
  *(.text.hot .text.hot.*)
  *(SORT_BY_NAME(.text.sorted.*))
  *(.text .stub .text.* .gnu.linkonce.t.*)
- .text          0x0000000000100000       0x8a kernel.o
+ .text          0x0000000000100000       0x8e kernel.o
                 0x0000000000100000                _start
                 0x0000000000100033                c_isr
- *fill*         0x000000000010008a        0x6 
- .text          0x0000000000100090       0x5e print.o
+ *fill*         0x000000000010008e        0x2 
+ .text          0x0000000000100090       0x84 print.o
                 0x0000000000100090                printstr
-                0x00000000001000b8                printc
-                0x00000000001000d7                setprintline
- .text          0x00000000001000ee      0x53e descriptor.o
-                0x00000000001000ee                init_gdt
-                0x00000000001001de                init_idt
-                0x0000000000100509                set_descriptor
-                0x00000000001005c0                set_idt_descriptor
- *fill*         0x000000000010062c        0x4 
- .text          0x0000000000100630       0x2d switchdescriptortable.o
-                0x0000000000100630                switch_gdt
-                0x0000000000100653                switch_idt
- *fill*         0x000000000010065d        0x3 
- .text          0x0000000000100660      0x29a interrupt.o
-                0x0000000000100660                isr0
-                0x000000000010066f                isr1
-                0x000000000010067e                isr2
-                0x000000000010068d                isr3
-                0x000000000010069c                isr4
-                0x00000000001006ab                isr5
-                0x00000000001006ba                isr6
-                0x00000000001006c9                isr7
-                0x00000000001006d8                isr8
-                0x00000000001006e7                isr9
-                0x00000000001006f6                isr10
-                0x0000000000100705                isr11
-                0x0000000000100714                isr12
-                0x0000000000100723                isr13
-                0x0000000000100732                isr14
-                0x0000000000100741                isr15
-                0x0000000000100750                isr16
-                0x000000000010075f                isr17
-                0x000000000010076e                isr18
-                0x000000000010077d                isr19
-                0x000000000010078c                isr32
-                0x000000000010079f                isr33
-                0x00000000001007b8                isr34
-                0x00000000001007cb                isr35
-                0x00000000001007de                isr36
-                0x00000000001007f1                isr37
-                0x0000000000100804                isr38
-                0x0000000000100817                isr39
-                0x000000000010082a                isr40
-                0x0000000000100841                isr41
-                0x0000000000100858                isr42
-                0x000000000010086f                isr43
-                0x0000000000100886                isr44
-                0x000000000010089d                isr45
-                0x00000000001008b4                isr46
-                0x00000000001008cb                isr47
-                0x00000000001008e2                isrx
- .text          0x00000000001008fa       0x6c convert.o
-                0x00000000001008fa                convertInt2Str
- *fill*         0x0000000000100966        0xa 
- .text          0x0000000000100970       0x20 port.o
-                0x0000000000100970                in_port_byte
-                0x0000000000100981                out_port_byte
+                0x00000000001000c5                printc
+                0x00000000001000f1                setprintline
+ .text          0x0000000000100114      0x53e descriptor.o
+                0x0000000000100114                init_gdt
+                0x0000000000100204                init_idt
+                0x000000000010052f                set_descriptor
+                0x00000000001005e6                set_idt_descriptor
+ *fill*         0x0000000000100652        0xe 
+ .text          0x0000000000100660       0x2d switchdescriptortable.o
+                0x0000000000100660                switch_gdt
+                0x0000000000100683                switch_idt
+ *fill*         0x000000000010068d        0x3 
+ .text          0x0000000000100690      0x29a interrupt.o
+                0x0000000000100690                isr0
+                0x000000000010069f                isr1
+                0x00000000001006ae                isr2
+                0x00000000001006bd                isr3
+                0x00000000001006cc                isr4
+                0x00000000001006db                isr5
+                0x00000000001006ea                isr6
+                0x00000000001006f9                isr7
+                0x0000000000100708                isr8
+                0x0000000000100717                isr9
+                0x0000000000100726                isr10
+                0x0000000000100735                isr11
+                0x0000000000100744                isr12
+                0x0000000000100753                isr13
+                0x0000000000100762                isr14
+                0x0000000000100771                isr15
+                0x0000000000100780                isr16
+                0x000000000010078f                isr17
+                0x000000000010079e                isr18
+                0x00000000001007ad                isr19
+                0x00000000001007bc                isr32
+                0x00000000001007cf                isr33
+                0x00000000001007e8                isr34
+                0x00000000001007fb                isr35
+                0x000000000010080e                isr36
+                0x0000000000100821                isr37
+                0x0000000000100834                isr38
+                0x0000000000100847                isr39
+                0x000000000010085a                isr40
+                0x0000000000100871                isr41
+                0x0000000000100888                isr42
+                0x000000000010089f                isr43
+                0x00000000001008b6                isr44
+                0x00000000001008cd                isr45
+                0x00000000001008e4                isr46
+                0x00000000001008fb                isr47
+                0x0000000000100912                isrx
+ .text          0x000000000010092a       0xdf convert.o
+                0x000000000010092a                convertInt2Hex
+                0x0000000000100996                convertChar2Hex
+ *fill*         0x0000000000100a09        0x7 
+ .text          0x0000000000100a10       0x20 port.o
+                0x0000000000100a10                in_port_byte
+                0x0000000000100a21                out_port_byte
  *(.gnu.warning)
 
 .fini
@@ -212,9 +213,9 @@ LOAD port.o
                 [!provide]                        PROVIDE (_etext = .)
                 [!provide]                        PROVIDE (etext = .)
 
-.rodata         0x0000000000100990       0x15
+.rodata         0x0000000000100a30       0x15
  *(.rodata .rodata.* .gnu.linkonce.r.*)
- .rodata        0x0000000000100990       0x15 kernel.o
+ .rodata        0x0000000000100a30       0x15 kernel.o
 
 .rodata1
  *(.rodata1)
@@ -223,13 +224,13 @@ LOAD port.o
  *(.eh_frame_hdr)
  *(.eh_frame_entry .eh_frame_entry.*)
 
-.eh_frame       0x00000000001009a8       0xf4
+.eh_frame       0x0000000000100a48      0x114
  *(.eh_frame)
- .eh_frame      0x00000000001009a8       0x54 kernel.o
- .eh_frame      0x00000000001009fc       0x80 descriptor.o
+ .eh_frame      0x0000000000100a48       0x54 kernel.o
+ .eh_frame      0x0000000000100a9c       0x80 descriptor.o
                                          0x98 (size before relaxing)
- .eh_frame      0x0000000000100a7c       0x20 convert.o
-                                         0x38 (size before relaxing)
+ .eh_frame      0x0000000000100b1c       0x40 convert.o
+                                         0x58 (size before relaxing)
  *(.eh_frame.*)
 
 .gcc_except_table
@@ -240,7 +241,7 @@ LOAD port.o
 
 .exception_ranges
  *(.exception_ranges*)
-                0x0000000000100a9c                . = .
+                0x0000000000100b5c                . = .
 
 .eh_frame
  *(.eh_frame)
@@ -255,7 +256,7 @@ LOAD port.o
 .exception_ranges
  *(.exception_ranges*)
 
-.tdata          0x0000000000100a9c        0x0
+.tdata          0x0000000000100b5c        0x0
                 [!provide]                        PROVIDE (__tdata_start = .)
  *(.tdata .tdata.* .gnu.linkonce.td.*)
 
@@ -263,18 +264,18 @@ LOAD port.o
  *(.tbss .tbss.* .gnu.linkonce.tb.*)
  *(.tcommon)
 
-.preinit_array  0x0000000000100a9c        0x0
+.preinit_array  0x0000000000100b5c        0x0
                 [!provide]                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array)
                 [!provide]                        PROVIDE (__preinit_array_end = .)
 
-.init_array     0x0000000000100a9c        0x0
+.init_array     0x0000000000100b5c        0x0
                 [!provide]                        PROVIDE (__init_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*))
  *(.init_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .ctors)
                 [!provide]                        PROVIDE (__init_array_end = .)
 
-.fini_array     0x0000000000100a9c        0x0
+.fini_array     0x0000000000100b5c        0x0
                 [!provide]                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*))
  *(.fini_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .dtors)
@@ -304,57 +305,57 @@ LOAD port.o
 .dynamic
  *(.dynamic)
 
-.got            0x0000000000100a9c        0x0
+.got            0x0000000000100b5c        0x0
  *(.got)
- .got           0x0000000000100a9c        0x0 kernel.o
+ .got           0x0000000000100b5c        0x0 kernel.o
  *(.igot)
 
-.got.plt        0x0000000000100a9c        0x0
+.got.plt        0x0000000000100b5c        0x0
  *(.got.plt)
- .got.plt       0x0000000000100a9c        0x0 kernel.o
+ .got.plt       0x0000000000100b5c        0x0 kernel.o
  *(.igot.plt)
- .igot.plt      0x0000000000100a9c        0x0 kernel.o
+ .igot.plt      0x0000000000100b5c        0x0 kernel.o
 
-.data           0x0000000000100a9c        0x0
+.data           0x0000000000100b5c        0x0
  *(.data .data.* .gnu.linkonce.d.*)
- .data          0x0000000000100a9c        0x0 kernel.o
- .data          0x0000000000100a9c        0x0 descriptor.o
- .data          0x0000000000100a9c        0x0 convert.o
+ .data          0x0000000000100b5c        0x0 kernel.o
+ .data          0x0000000000100b5c        0x0 descriptor.o
+ .data          0x0000000000100b5c        0x0 convert.o
 
 .data1
  *(.data1)
-                0x0000000000100a9c                _edata = .
+                0x0000000000100b5c                _edata = .
                 [!provide]                        PROVIDE (edata = .)
-                0x0000000000100a9c                . = .
-                0x0000000000100a9c                __bss_start = .
+                0x0000000000100b5c                . = .
+                0x0000000000100b5c                __bss_start = .
 
-.bss            0x0000000000100aa0      0x880
+.bss            0x0000000000100b60      0x880
  *(.dynbss)
  *(.bss .bss.* .gnu.linkonce.b.*)
- .bss           0x0000000000100aa0        0x0 kernel.o
- .bss           0x0000000000100aa0        0x0 descriptor.o
- .bss           0x0000000000100aa0        0x0 convert.o
+ .bss           0x0000000000100b60        0x0 kernel.o
+ .bss           0x0000000000100b60        0x0 descriptor.o
+ .bss           0x0000000000100b60        0x0 convert.o
  *(COMMON)
- COMMON         0x0000000000100aa0      0x880 descriptor.o
-                0x0000000000100aa0                idt_ptr
-                0x0000000000100ac0                gdt
-                0x0000000000100b00                gdt_ptr
-                0x0000000000100b20                idt
-                0x0000000000101320                . = ALIGN ((. != 0x0)?0x4:0x1)
-                0x0000000000101320                . = ALIGN (0x4)
-                0x0000000000101320                . = SEGMENT_START ("ldata-segment", .)
-                0x0000000000101320                . = ALIGN (0x4)
-                0x0000000000101320                _end = .
+ COMMON         0x0000000000100b60      0x880 descriptor.o
+                0x0000000000100b60                idt_ptr
+                0x0000000000100b80                gdt
+                0x0000000000100bc0                gdt_ptr
+                0x0000000000100be0                idt
+                0x00000000001013e0                . = ALIGN ((. != 0x0)?0x4:0x1)
+                0x00000000001013e0                . = ALIGN (0x4)
+                0x00000000001013e0                . = SEGMENT_START ("ldata-segment", .)
+                0x00000000001013e0                . = ALIGN (0x4)
+                0x00000000001013e0                _end = .
                 [!provide]                        PROVIDE (end = .)
 
-.stab           0x0000000000000000     0x1428
+.stab           0x0000000000000000     0x1494
  *(.stab)
- .stab          0x0000000000000000      0x1e0 print.o
- .stab          0x00000000000001e0       0xf0 switchdescriptortable.o
+ .stab          0x0000000000000000      0x24c print.o
+ .stab          0x000000000000024c       0xf0 switchdescriptortable.o
                                          0xfc (size before relaxing)
- .stab          0x00000000000002d0     0x1074 interrupt.o
+ .stab          0x000000000000033c     0x1074 interrupt.o
                                        0x1080 (size before relaxing)
- .stab          0x0000000000001344       0xe4 port.o
+ .stab          0x00000000000013b0       0xe4 port.o
                                          0xf0 (size before relaxing)
 
 .stabstr        0x0000000000000000       0x56
@@ -407,35 +408,35 @@ LOAD port.o
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000      0x453
+.debug_info     0x0000000000000000      0x4a1
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x0000000000000000       0xab kernel.o
- .debug_info    0x00000000000000ab      0x315 descriptor.o
- .debug_info    0x00000000000003c0       0x93 convert.o
+ .debug_info    0x0000000000000000       0xa4 kernel.o
+ .debug_info    0x00000000000000a4      0x315 descriptor.o
+ .debug_info    0x00000000000003b9       0xe8 convert.o
 
-.debug_abbrev   0x0000000000000000      0x27f
+.debug_abbrev   0x0000000000000000      0x28e
  *(.debug_abbrev)
- .debug_abbrev  0x0000000000000000       0x9b kernel.o
- .debug_abbrev  0x000000000000009b      0x159 descriptor.o
- .debug_abbrev  0x00000000000001f4       0x8b convert.o
+ .debug_abbrev  0x0000000000000000       0x90 kernel.o
+ .debug_abbrev  0x0000000000000090      0x159 descriptor.o
+ .debug_abbrev  0x00000000000001e9       0xa5 convert.o
 
-.debug_line     0x0000000000000000      0x233
+.debug_line     0x0000000000000000      0x27d
  *(.debug_line .debug_line.* .debug_line_end)
- .debug_line    0x0000000000000000       0x65 kernel.o
- .debug_line    0x0000000000000065      0x14b descriptor.o
- .debug_line    0x00000000000001b0       0x83 convert.o
+ .debug_line    0x0000000000000000       0x68 kernel.o
+ .debug_line    0x0000000000000068      0x14b descriptor.o
+ .debug_line    0x00000000000001b3       0xca convert.o
 
 .debug_frame
  *(.debug_frame)
 
-.debug_str      0x0000000000000000      0x218
+.debug_str      0x0000000000000000      0x22f
  *(.debug_str)
  .debug_str     0x0000000000000000       0xb7 kernel.o
                                          0xc9 (size before relaxing)
  .debug_str     0x00000000000000b7      0x13b descriptor.o
                                         0x1de (size before relaxing)
- .debug_str     0x00000000000001f2       0x26 convert.o
-                                         0xbc (size before relaxing)
+ .debug_str     0x00000000000001f2       0x3d convert.o
+                                         0xd3 (size before relaxing)
 
 .debug_loc
  *(.debug_loc)
