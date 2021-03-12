@@ -29,6 +29,7 @@ printstr_loop:
   cmp edi, display_buf_limit
   jl .label_printstr_end2
   mov edi, 0
+  call cleanscreen_loop
   
 .label_printstr_end2  
   mov [cur_disp_pos], edi  
@@ -51,6 +52,7 @@ printc:
   cmp edi, display_buf_limit
   jl .label_printc_end
   mov edi, 0
+  call cleanscreen_loop
   
 .label_printc_end
   mov [cur_disp_pos], edi  
@@ -71,12 +73,21 @@ setprintline:
 	cmp eax, display_buf_limit
     jl .label_setprintline_end
     mov eax, 0
+    call cleanscreen_loop
   
-.label_setprintline_end
+  .label_setprintline_end
 	mov [cur_disp_pos], eax
  
     mov esp, ebp
     pop ebp
+    ret
+
+; clear screen
+cleanscreen:
+    mov ecx, display_buf_limit
+  .cleanscreen_loop
+    mov byte [gs:(display_buf_limit - ecx)], 0
+    loop .cleanscreen_loop
     ret
 
 ;;
