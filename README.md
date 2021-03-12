@@ -19,4 +19,6 @@ bochsgdb -f bochsrc.gdb
 gdb 
 set disassembly-flavor intel
 target remote localhost:1234
+layout split
+layout reg
 
