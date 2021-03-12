@@ -333,14 +333,10 @@ isr33:
    call c_isr
    add esp, 4
 
-   ;in al ,060h
-   ;push eax
-   ;call printc
-   ;add esp, 4   
-
    mov al, 020h
    out 020h, al  ; 020h port No
-   out 0a0h, al
+
+   jmp $
  
    pop edi
    pop esi
