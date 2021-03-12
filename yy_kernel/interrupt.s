@@ -40,6 +40,7 @@ global isr47
 global isrx  
 
 extern c_isr ;
+extern printc ;
 
 ; 
 isr0:
@@ -53,6 +54,7 @@ isr0:
    pop edi
    pop esi
    iretd
+
 ; 
 isr1:
    push esi
@@ -313,6 +315,9 @@ isr32:
    push 32   ; 32 bit
    call c_isr
    add esp, 4
+
+   mov al, 020h
+   out 020h, al  ; 020h port No
    
    pop edi
    pop esi
@@ -323,10 +328,20 @@ isr33:
    push esi
    push edi
 
-   push 33   ; 32 bit
+   mov eax, 33
+   push eax   ; 32 bit
    call c_isr
    add esp, 4
-   
+
+   ;in al ,060h
+   ;push eax
+   ;call printc
+   ;add esp, 4   
+
+   mov al, 020h
+   out 020h, al  ; 020h port No
+   out 0a0h, al
+ 
    pop edi
    pop esi
    iretd
@@ -339,6 +354,9 @@ isr34:
    push 34   ; 32 bit
    call c_isr
    add esp, 4
+   
+   mov al, 020h
+   out 020h, al  ; 020h port No
    
    pop edi
    pop esi
@@ -353,6 +371,9 @@ isr35:
    call c_isr
    add esp, 4
    
+   mov al, 020h
+   out 020h, al  ; 020h port No
+   
    pop edi
    pop esi
    iretd
@@ -365,6 +386,9 @@ isr36:
    push 36   ; 32 bit
    call c_isr
    add esp, 4
+   
+   mov al, 020h
+   out 020h, al  ; 020h port No
    
    pop edi
    pop esi
@@ -379,6 +403,9 @@ isr37:
    call c_isr
    add esp, 4
    
+   mov al, 020h
+   out 020h, al  ; 020h port No
+   
    pop edi
    pop esi
    iretd
@@ -391,6 +418,9 @@ isr38:
    push 38   ; 32 bit
    call c_isr
    add esp, 4
+   
+   mov al, 020h
+   out 020h, al  ; 020h port No
    
    pop edi
    pop esi
@@ -405,6 +435,9 @@ isr39:
    call c_isr
    add esp, 4
    
+   mov al, 020h
+   out 020h, al  ; 020h port No
+   
    pop edi
    pop esi
    iretd
@@ -417,6 +450,12 @@ isr40:
    push 40   ; 32 bit
    call c_isr
    add esp, 4
+   
+   mov al, 020h
+   out 020h, al  ; 020h port No
+   
+   mov al, 020h
+   out 0a0h, al  ; 020h port No
    
    pop edi
    pop esi
@@ -431,6 +470,12 @@ isr41:
    call c_isr
    add esp, 4
    
+   mov al, 020h
+   out 020h, al  ; 020h port No
+   
+   mov al, 020h
+   out 0a0h, al  ; 020h port No
+   
    pop edi
    pop esi
    iretd
@@ -443,6 +488,12 @@ isr42:
    push 42   ; 32 bit
    call c_isr
    add esp, 4
+   
+   mov al, 020h
+   out 020h, al  ; 020h port No
+   
+   mov al, 020h
+   out 0a0h, al  ; 020h port No
    
    pop edi
    pop esi
@@ -457,6 +508,12 @@ isr43:
    call c_isr
    add esp, 4
    
+   mov al, 020h
+   out 020h, al  ; 020h port No
+   
+   mov al, 020h
+   out 0a0h, al  ; 020h port No
+   
    pop edi
    pop esi
    iretd
@@ -469,6 +526,12 @@ isr44:
    push 44   ; 32 bit
    call c_isr
    add esp, 4
+   
+   mov al, 020h
+   out 020h, al  ; 020h port No
+   
+   mov al, 020h
+   out 0a0h, al  ; 020h port No
    
    pop edi
    pop esi
@@ -483,6 +546,12 @@ isr45:
    call c_isr
    add esp, 4
    
+   mov al, 020h
+   out 020h, al  ; 020h port No
+   
+   mov al, 020h
+   out 0a0h, al  ; 020h port No
+   
    pop edi
    pop esi
    iretd
@@ -495,6 +564,12 @@ isr46:
    push 46   ; 32 bit
    call c_isr
    add esp, 4
+   
+   mov al, 020h
+   out 020h, al  ; 020h port No
+   
+   mov al, 020h
+   out 0a0h, al  ; 020h port No
    
    pop edi
    pop esi
@@ -509,6 +584,12 @@ isr47:
    call c_isr
    add esp, 4
    
+   mov al, 020h
+   out 020h, al  ; 020h port No
+   
+   mov al, 020h
+   out 0a0h, al  ; 020h port No
+   
    pop edi
    pop esi
    iretd
@@ -521,6 +602,10 @@ isrx:
    push 255   ; 32 bit
    call c_isr
    add esp, 4
+
+   mov al, 020h
+   out 020h, al  ; 020h port No
+   out 0a0h, al
    
    pop edi
    pop esi

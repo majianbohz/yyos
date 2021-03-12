@@ -32,7 +32,7 @@ masterboot : yy_masterboot/*.s
 	$(ASM) $(ASMFLAGS_BIN) -o $@ yy_masterboot/*.s
 	dd conv=notrunc if=masterboot of=c.img count=1
   
-bootloader.elf : yy_bootloader/*.s yy_bootloader/*.c
+bootloader.elf : yy_bootloader/*.s yy_bootloader/*.c  common/*.s common/*.c
 	rm -f *.o
 	$(ASM) $(ASMFLAGS_ELF) -o bootloader.o yy_bootloader/bootloader.s
 	$(CC)  $(CCFLAGS)  -o loadkernel.o yy_bootloader/loadkernel.c
@@ -40,15 +40,16 @@ bootloader.elf : yy_bootloader/*.s yy_bootloader/*.c
 	objcopy -O binary $@  bootloader
 	dd conv=notrunc if=bootloader of=c.img seek=1
   
-kernel.elf : yy_kernel/*.s yy_kernel/*.c
+kernel.elf : yy_kernel/*.s yy_kernel/*.c  common/*.s common/*.c
 	rm -f *.o
 	$(ASM) $(ASMFLAGS_ELF) -o switchdescriptortable.o yy_kernel/switchdescriptortable.s
 	$(ASM) $(ASMFLAGS_ELF) -o interrupt.o yy_kernel/interrupt.s
 	$(ASM) $(ASMFLAGS_ELF) -o print.o common/print.s
+	$(ASM) $(ASMFLAGS_ELF) -o port.o common/port.s
 	$(CC)  $(CCFLAGS)  -o kernel.o yy_kernel/kernel.c
 	$(CC)  $(CCFLAGS)  -o descriptor.o yy_kernel/descriptor.c
 	$(CC)  $(CCFLAGS)  -o convert.o common/convert.c
-	$(LD)  $(LDFLAGS_KERNEL)  -o $@  kernel.o  print.o descriptor.o switchdescriptortable.o interrupt.o convert.o # kernel.o must put first, affect binary file out
+	$(LD)  $(LDFLAGS_KERNEL)  -o $@  kernel.o  print.o descriptor.o switchdescriptortable.o interrupt.o convert.o port.o # kernel.o must put first, affect binary file out
 	objcopy -O binary $@  kernel
 	cp -f kernel cimg/
-
+	ls -l  cimg/
