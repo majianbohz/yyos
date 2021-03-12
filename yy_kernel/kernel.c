@@ -3,7 +3,8 @@
 extern void printstr(char * msg); 
 extern void printc(char  mychar); 
 extern void setprintline(int lineNo);
-extern void convertInt2Str(int, char*);
+extern void convertInt2Hex(int, char*);
+extern void convertChar2Hex(char myChar, char* str);
 extern void init_gdt();
 extern void init_idt();
 extern void in_port_byte(int port, char *pval);
@@ -21,9 +22,9 @@ void _start() {
 }
 
 
-void c_isr(int irqNo) {
+void c_isr(unsigned int irqNo) {
   char buf[10];
-  convertInt2Str(irqNo, buf);
+  convertChar2Hex((unsigned char)irqNo, buf);
   printstr(buf);
  
   if (33 == irqNo) { 
