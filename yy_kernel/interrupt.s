@@ -336,8 +336,6 @@ isr33:
    mov al, 020h
    out 020h, al  ; 020h port No
 
-   jmp $
- 
    pop edi
    pop esi
    iretd
