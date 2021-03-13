@@ -5,7 +5,9 @@
 #include "process.h"
 #include "descriptor.h"
 
+extern void  switch_task_asm(void*);
 extern void  task_init();
+
 
 TCB  process_control_block[5];
 
@@ -26,11 +28,6 @@ void init_tss_descriptor() {
   set_descriptor(2, &tss, sizeof(TSS), DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_TSS, GRAN_BYTE); 	// TSS
 }
 
-void switch2TaskInit() {
-  tss.SS0 = selector_task_kernel1_data;
-  tss.ESP0 = 0xffffff; //16M 
-}
-
 void switch2TaskUser1() {
   tss.SS0 = selector_task_user1_data;
   tss.ESP0 = 0xffffff; //16M 
@@ -41,10 +38,15 @@ void switch2TaskUser2() {
   tss.ESP0 = 0xffffff; //16M 
 }
 
-void init_proces() {
+void entry_task_init() {
+  tss.SS0 = selector_task_kernel1_data;
+  tss.ESP0 = 0xffffff; //16M 
+
   TCB tcb = process_control_block[0];
   tcb.cs_origin = selector_task_kernel1_code;
   tcb.esp_origin = 0xffffff; // offset 16M 
-  tcb.eip = &task_init;
+  tcb.eip_origin = &task_init;
+
+  switch_task_asm(&tcb.eip_origin);
 }
 
