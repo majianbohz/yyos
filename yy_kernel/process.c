@@ -25,7 +25,7 @@ const short selector_task_user2_code = (18 << 3) | RPL_R3;
 const short selector_task_user2_data = (19 << 3) | RPL_R3;
 
 void init_tss_descriptor() {
-  set_descriptor(2, &tss, sizeof(TSS), DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_TSS, GRAN_BYTE); 	// TSS
+  set_descriptor(2, (unsigned int)&tss, sizeof(TSS), DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_TSS, GRAN_BYTE); 	// TSS
 }
 
 void switch2TaskUser1() {
@@ -45,7 +45,7 @@ void entry_task_init() {
   TCB tcb = process_control_block[0];
   tcb.cs_origin = selector_task_kernel1_code;
   tcb.esp_origin = 0xffffff; // offset 16M 
-  tcb.eip_origin = &task_init;
+  tcb.eip_origin = (int)&task_init;
 
   switch_task_asm(&tcb.eip_origin);
 }
