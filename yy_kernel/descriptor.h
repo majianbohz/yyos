@@ -40,9 +40,9 @@ struct GDT_PTR {
 #define DPL_R3 0x60
 
 #define RPL_R0 0x0 
-#define RPL_R1 0x20
-#define RPL_R2 0x40
-#define RPL_R3 0x60
+#define RPL_R1 0x1
+#define RPL_R2 0x2
+#define RPL_R3 0x3
 
 /*
 
@@ -69,3 +69,5 @@ struct IDT_PTR {
 	unsigned int  base; 	// 描述符表 32位 基地址
 } __attribute__((packed)) IDT_PTR;
 
+void set_descriptor(int index, unsigned int  base, unsigned int limit, unsigned char attr, unsigned char gran);
+void set_idt_descriptor(int index, void *offset, unsigned short selector, unsigned char type_attr); 

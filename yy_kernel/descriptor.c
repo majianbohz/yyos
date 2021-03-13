@@ -1,7 +1,7 @@
 #include "descriptor.h"
 
 // 全局描述符表长度
-#define GDT_LENGTH 8
+#define GDT_LENGTH 30 // 
 
 // 全局描述符表定义
 DESCRIPTOR_ENTRY gdt[GDT_LENGTH];
@@ -59,10 +59,6 @@ extern unsigned int  stack;
 extern void switch_gdt(void* pgdtptr);
 extern void switch_idt(void* pgdtptr);
 
-
-void set_descriptor(int index, unsigned int  base, unsigned int limit, unsigned char attr, unsigned char gran);
-void set_idt_descriptor(int index, void *offset, unsigned short selector, unsigned char type_attr); 
-
 // 初始化全局描述符表
 void init_gdt()
 {
@@ -72,14 +68,21 @@ void init_gdt()
 
 	// 采用 Intel 平坦模型
 	set_descriptor(0, 0, 0, 0, 0);             	// 按照 Intel 文档要求，第一个描述符必须全 0
-	set_descriptor(1, 0, 0xFFFFF, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 内核指令段
-	set_descriptor(2, 0, 0xFFFFF, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 内核数据段
-	set_descriptor(3, 0, 0xFFFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 1#用户进程指令段
-	set_descriptor(4, 0, 0xFFFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 1#用户进程数据段
-	set_descriptor(5, 0, 0xFFFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 2#用户进程指令段
-	set_descriptor(6, 0, 0xFFFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 2#用户进程数据段
-	
-    set_descriptor(7, 0xB8000, 0x3E80, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_BYTE); 	// 
+	set_descriptor(1, 0xB8000, 0x3E80, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_BYTE); 	// 
+  set_descriptor(2, 0, 0, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_DATA_RW, GRAN_BYTE); 	// TSS
+
+  set_descriptor(10, 0, 0xFFFFF, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 内核指令段 4G
+	set_descriptor(11, 0, 0xFFFFF, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 内核数据段 4G
+
+  set_descriptor(12, 0, 0xFFFFF, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 0#内核进程指令段 16M
+	set_descriptor(13, 0, 0xFFFFF, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 0#内核进程数据段 16M
+  set_descriptor(14, 0x1000000, 0xFFF, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 0#内核进程指令段 16M
+	set_descriptor(15, 0x1000000, 0xFFF, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 0#内核进程数据段 16M
+
+  set_descriptor(16, 0x2000000, 0xFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 1#用户进程指令段 16M
+	set_descriptor(17, 0x2000000, 0xFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 1#用户进程数据段 16M
+	set_descriptor(18, 0x3000000, 0xFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 2#用户进程指令段 16M
+	set_descriptor(19, 0x3000000, 0xFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 2#用户进程数据段 16M
 
 	// 加载全局描述符表地址到 GPTR 寄存器
     switch_gdt(&gdt_ptr);
@@ -153,11 +156,10 @@ void set_descriptor(int index, unsigned int  base, unsigned int limit, unsigned 
 
 void set_idt_descriptor(int index, void * offset, unsigned short selector, unsigned char type_attr) 
 {
-        unsigned int base = (unsigned int)offset;
+  unsigned int base = (unsigned int)offset;
 	idt[index].offset_1 = base & 0x0000ffff;
 	idt[index].offset_2 = (base >> 16) & 0x0000ffff;
 	idt[index].selector = selector;
 	idt[index].zero = 0;
 	idt[index].type_attr = type_attr | 0X80;  //0x80 -> P 段存在标记
 }
-
