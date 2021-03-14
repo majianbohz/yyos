@@ -11,7 +11,7 @@ Common symbol       size              file
 
 idt_ptr             0x6               descriptor.o
 gdt                 0xf0              descriptor.o
-tss                 0x68              process.o
+tss                 0x68              descriptor.o
 gdt_ptr             0x6               descriptor.o
 idt                 0x800             descriptor.o
 process_control_block
@@ -145,7 +145,7 @@ LOAD process_manage.o
 .plt.sec
  *(.plt.sec)
 
-.text           0x0000000000100000      0xbd6
+.text           0x0000000000100000      0xbd0
  *(.text.unlikely .text.*_unlikely .text.unlikely.*)
  *(.text.exit .text.exit.*)
  *(.text.startup .text.startup.*)
@@ -161,12 +161,12 @@ LOAD process_manage.o
                 0x00000000001000c0                printstr
                 0x00000000001000fa                printc
                 0x000000000010012b                setprintline
- .text          0x0000000000100165      0x5c5 descriptor.o
+ .text          0x0000000000100165      0x5c9 descriptor.o
                 0x0000000000100165                init_gdt
-                0x00000000001002dc                init_idt
-                0x0000000000100607                set_descriptor
-                0x00000000001006be                set_idt_descriptor
- *fill*         0x000000000010072a        0x6 
+                0x00000000001002e0                init_idt
+                0x000000000010060b                set_descriptor
+                0x00000000001006c2                set_idt_descriptor
+ *fill*         0x000000000010072e        0x2 
  .text          0x0000000000100730       0x2d switchdescriptortable.o
                 0x0000000000100730                switch_gdt
                 0x0000000000100753                switch_idt
@@ -216,14 +216,13 @@ LOAD process_manage.o
  .text          0x0000000000100ae0       0x20 port.o
                 0x0000000000100ae0                in_port_byte
                 0x0000000000100af1                out_port_byte
- .text          0x0000000000100b00       0xce process.o
-                0x0000000000100b00                init_tss_descriptor
-                0x0000000000100b26                switch2TaskUser1
-                0x0000000000100b45                switch2TaskUser2
-                0x0000000000100b64                entry_task_init
- *fill*         0x0000000000100bce        0x2 
- .text          0x0000000000100bd0        0x6 process_manage.o
-                0x0000000000100bd0                switch_task_asm
+ .text          0x0000000000100b00       0xba process.o
+                0x0000000000100b00                switch2TaskUser1
+                0x0000000000100b1f                switch2TaskUser2
+                0x0000000000100b3e                entry_task_init
+ *fill*         0x0000000000100bba        0x6 
+ .text          0x0000000000100bc0       0x10 process_manage.o
+                0x0000000000100bc0                switch_task_asm
  *(.gnu.warning)
 
 .fini
@@ -232,21 +231,22 @@ LOAD process_manage.o
                 [!provide]                        PROVIDE (_etext = .)
                 [!provide]                        PROVIDE (etext = .)
 
-.rodata         0x0000000000100bd6       0x2a
+.rodata         0x0000000000100bd0       0x2c
  *(.rodata .rodata.* .gnu.linkonce.r.*)
- .rodata        0x0000000000100bd6       0x15 kernel.o
- *fill*         0x0000000000100beb        0x1 
- .rodata        0x0000000000100bec       0x14 process.o
-                0x0000000000100bec                selector_kernel_code
-                0x0000000000100bee                selector_kernel_data
-                0x0000000000100bf0                selector_task_kernel1_code
-                0x0000000000100bf2                selector_task_kernel1_data
-                0x0000000000100bf4                selector_task_kernel2_code
-                0x0000000000100bf6                selector_task_kernel2_data
-                0x0000000000100bf8                selector_task_user1_code
-                0x0000000000100bfa                selector_task_user1_data
-                0x0000000000100bfc                selector_task_user2_code
-                0x0000000000100bfe                selector_task_user2_data
+ .rodata        0x0000000000100bd0       0x15 kernel.o
+ *fill*         0x0000000000100be5        0x1 
+ .rodata        0x0000000000100be6       0x16 process.o
+                0x0000000000100be6                selector_tss
+                0x0000000000100be8                selector_kernel_code
+                0x0000000000100bea                selector_kernel_data
+                0x0000000000100bec                selector_task_kernel1_code
+                0x0000000000100bee                selector_task_kernel1_data
+                0x0000000000100bf0                selector_task_kernel2_code
+                0x0000000000100bf2                selector_task_kernel2_data
+                0x0000000000100bf4                selector_task_user1_code
+                0x0000000000100bf6                selector_task_user1_data
+                0x0000000000100bf8                selector_task_user2_code
+                0x0000000000100bfa                selector_task_user2_data
 
 .rodata1
  *(.rodata1)
@@ -255,15 +255,15 @@ LOAD process_manage.o
  *(.eh_frame_hdr)
  *(.eh_frame_entry .eh_frame_entry.*)
 
-.eh_frame       0x0000000000100c00      0x1bc
+.eh_frame       0x0000000000100bfc      0x19c
  *(.eh_frame)
- .eh_frame      0x0000000000100c00       0x70 kernel.o
- .eh_frame      0x0000000000100c70       0x80 descriptor.o
+ .eh_frame      0x0000000000100bfc       0x70 kernel.o
+ .eh_frame      0x0000000000100c6c       0x80 descriptor.o
                                          0x98 (size before relaxing)
- .eh_frame      0x0000000000100cf0       0x40 convert.o
+ .eh_frame      0x0000000000100cec       0x40 convert.o
                                          0x58 (size before relaxing)
- .eh_frame      0x0000000000100d30       0x8c process.o
-                                         0xa4 (size before relaxing)
+ .eh_frame      0x0000000000100d2c       0x6c process.o
+                                         0x84 (size before relaxing)
  *(.eh_frame.*)
 
 .gcc_except_table
@@ -274,7 +274,7 @@ LOAD process_manage.o
 
 .exception_ranges
  *(.exception_ranges*)
-                0x0000000000100dbc                . = .
+                0x0000000000100d98                . = .
 
 .eh_frame
  *(.eh_frame)
@@ -289,7 +289,7 @@ LOAD process_manage.o
 .exception_ranges
  *(.exception_ranges*)
 
-.tdata          0x0000000000100dbc        0x0
+.tdata          0x0000000000100d98        0x0
                 [!provide]                        PROVIDE (__tdata_start = .)
  *(.tdata .tdata.* .gnu.linkonce.td.*)
 
@@ -297,18 +297,18 @@ LOAD process_manage.o
  *(.tbss .tbss.* .gnu.linkonce.tb.*)
  *(.tcommon)
 
-.preinit_array  0x0000000000100dbc        0x0
+.preinit_array  0x0000000000100d98        0x0
                 [!provide]                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array)
                 [!provide]                        PROVIDE (__preinit_array_end = .)
 
-.init_array     0x0000000000100dbc        0x0
+.init_array     0x0000000000100d98        0x0
                 [!provide]                        PROVIDE (__init_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*))
  *(.init_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .ctors)
                 [!provide]                        PROVIDE (__init_array_end = .)
 
-.fini_array     0x0000000000100dbc        0x0
+.fini_array     0x0000000000100d98        0x0
                 [!provide]                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*))
  *(.fini_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .dtors)
@@ -338,55 +338,55 @@ LOAD process_manage.o
 .dynamic
  *(.dynamic)
 
-.got            0x0000000000100dbc        0x0
+.got            0x0000000000100d98        0x0
  *(.got)
- .got           0x0000000000100dbc        0x0 kernel.o
+ .got           0x0000000000100d98        0x0 kernel.o
  *(.igot)
 
-.got.plt        0x0000000000100dbc        0x0
+.got.plt        0x0000000000100d98        0x0
  *(.got.plt)
- .got.plt       0x0000000000100dbc        0x0 kernel.o
+ .got.plt       0x0000000000100d98        0x0 kernel.o
  *(.igot.plt)
- .igot.plt      0x0000000000100dbc        0x0 kernel.o
+ .igot.plt      0x0000000000100d98        0x0 kernel.o
 
-.data           0x0000000000100dbc        0x0
+.data           0x0000000000100d98        0x0
  *(.data .data.* .gnu.linkonce.d.*)
- .data          0x0000000000100dbc        0x0 kernel.o
- .data          0x0000000000100dbc        0x0 descriptor.o
- .data          0x0000000000100dbc        0x0 convert.o
- .data          0x0000000000100dbc        0x0 process.o
+ .data          0x0000000000100d98        0x0 kernel.o
+ .data          0x0000000000100d98        0x0 descriptor.o
+ .data          0x0000000000100d98        0x0 convert.o
+ .data          0x0000000000100d98        0x0 process.o
 
 .data1
  *(.data1)
-                0x0000000000100dbc                _edata = .
+                0x0000000000100d98                _edata = .
                 [!provide]                        PROVIDE (edata = .)
-                0x0000000000100dbc                . = .
-                0x0000000000100dbc                __bss_start = .
+                0x0000000000100d98                . = .
+                0x0000000000100d98                __bss_start = .
 
-.bss            0x0000000000100dc0      0xb08
+.bss            0x0000000000100da0      0xb08
  *(.dynbss)
  *(.bss .bss.* .gnu.linkonce.b.*)
- .bss           0x0000000000100dc0        0x0 kernel.o
- .bss           0x0000000000100dc0        0x0 descriptor.o
- .bss           0x0000000000100dc0        0x0 convert.o
- .bss           0x0000000000100dc0        0x0 process.o
+ .bss           0x0000000000100da0        0x0 kernel.o
+ .bss           0x0000000000100da0        0x0 descriptor.o
+ .bss           0x0000000000100da0        0x0 convert.o
+ .bss           0x0000000000100da0        0x0 process.o
  *(COMMON)
- COMMON         0x0000000000100dc0      0x920 descriptor.o
-                0x0000000000100dc0                idt_ptr
-                0x0000000000100de0                gdt
-                0x0000000000100ed0                gdt_ptr
-                0x0000000000100ee0                idt
- COMMON         0x00000000001016e0      0x1e8 process.o
-                0x00000000001016e0                tss
-                0x0000000000101760                process_control_block
-                0x00000000001018c8                . = ALIGN ((. != 0x0)?0x4:0x1)
-                0x00000000001018c8                . = ALIGN (0x4)
-                0x00000000001018c8                . = SEGMENT_START ("ldata-segment", .)
-                0x00000000001018c8                . = ALIGN (0x4)
-                0x00000000001018c8                _end = .
+ COMMON         0x0000000000100da0      0x9a0 descriptor.o
+                0x0000000000100da0                idt_ptr
+                0x0000000000100dc0                gdt
+                0x0000000000100ec0                tss
+                0x0000000000100f28                gdt_ptr
+                0x0000000000100f40                idt
+ COMMON         0x0000000000101740      0x168 process.o
+                0x0000000000101740                process_control_block
+                0x00000000001018a8                . = ALIGN ((. != 0x0)?0x4:0x1)
+                0x00000000001018a8                . = ALIGN (0x4)
+                0x00000000001018a8                . = SEGMENT_START ("ldata-segment", .)
+                0x00000000001018a8                . = ALIGN (0x4)
+                0x00000000001018a8                _end = .
                 [!provide]                        PROVIDE (end = .)
 
-.stab           0x0000000000000000     0x1530
+.stab           0x0000000000000000     0x156c
  *(.stab)
  .stab          0x0000000000000000      0x2b8 print.o
  .stab          0x00000000000002b8       0xf0 switchdescriptortable.o
@@ -395,8 +395,8 @@ LOAD process_manage.o
                                        0x1074 (size before relaxing)
  .stab          0x0000000000001410       0xe4 port.o
                                          0xf0 (size before relaxing)
- .stab          0x00000000000014f4       0x3c process_manage.o
-                                         0x48 (size before relaxing)
+ .stab          0x00000000000014f4       0x78 process_manage.o
+                                         0x84 (size before relaxing)
 
 .stabstr        0x0000000000000000       0x71
  *(.stabstr)
@@ -451,40 +451,40 @@ LOAD process_manage.o
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000      0x8b1
+.debug_info     0x0000000000000000      0xa4d
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x0000000000000000       0xb6 kernel.o
- .debug_info    0x00000000000000b6      0x315 descriptor.o
- .debug_info    0x00000000000003cb       0xe8 convert.o
- .debug_info    0x00000000000004b3      0x3fe process.o
+ .debug_info    0x0000000000000000       0xd0 kernel.o
+ .debug_info    0x00000000000000d0      0x49d descriptor.o
+ .debug_info    0x000000000000056d       0xe8 convert.o
+ .debug_info    0x0000000000000655      0x3f8 process.o
 
-.debug_abbrev   0x0000000000000000      0x392
+.debug_abbrev   0x0000000000000000      0x3e6
  *(.debug_abbrev)
- .debug_abbrev  0x0000000000000000       0x90 kernel.o
- .debug_abbrev  0x0000000000000090      0x159 descriptor.o
- .debug_abbrev  0x00000000000001e9       0xa5 convert.o
- .debug_abbrev  0x000000000000028e      0x104 process.o
+ .debug_abbrev  0x0000000000000000       0xcd kernel.o
+ .debug_abbrev  0x00000000000000cd      0x188 descriptor.o
+ .debug_abbrev  0x0000000000000255       0xa5 convert.o
+ .debug_abbrev  0x00000000000002fa       0xec process.o
 
-.debug_line     0x0000000000000000      0x335
+.debug_line     0x0000000000000000      0x33d
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x0000000000000000       0x74 kernel.o
- .debug_line    0x0000000000000074      0x166 descriptor.o
- .debug_line    0x00000000000001da       0xca convert.o
- .debug_line    0x00000000000002a4       0x91 process.o
+ .debug_line    0x0000000000000074      0x174 descriptor.o
+ .debug_line    0x00000000000001e8       0xca convert.o
+ .debug_line    0x00000000000002b2       0x8b process.o
 
 .debug_frame
  *(.debug_frame)
 
-.debug_str      0x0000000000000000      0x40c
+.debug_str      0x0000000000000000      0x40e
  *(.debug_str)
- .debug_str     0x0000000000000000       0xb7 kernel.o
+ .debug_str     0x0000000000000000       0xc0 kernel.o
+                                         0xdc (size before relaxing)
+ .debug_str     0x00000000000000c0      0x16e descriptor.o
+                                        0x218 (size before relaxing)
+ .debug_str     0x000000000000022e       0x3d convert.o
                                          0xd3 (size before relaxing)
- .debug_str     0x00000000000000b7      0x134 descriptor.o
-                                        0x1de (size before relaxing)
- .debug_str     0x00000000000001eb       0x3d convert.o
-                                         0xd3 (size before relaxing)
- .debug_str     0x0000000000000228      0x1e4 process.o
-                                        0x2a3 (size before relaxing)
+ .debug_str     0x000000000000026b      0x1a3 process.o
+                                        0x29c (size before relaxing)
 
 .debug_loc
  *(.debug_loc)

@@ -8,7 +8,7 @@
 extern void  switch_task_asm(void*);
 extern void  switch_tss_asm(int tss_selector);
 extern void  task_init();  // init -> first task
-
+extern TSS tss;
 
 TCB  process_control_block[5];
 
@@ -38,7 +38,7 @@ void switch2TaskUser2() {
 void entry_task_init() {
   tss.SS0 = selector_task_kernel1_data;
   tss.ESP0 = 0xffffff; //16M
-  switch_tss_asm(selector_tss) 
+  switch_tss_asm(selector_tss); 
 
   TCB tcb = process_control_block[0];
   tcb.cs_origin = selector_task_kernel1_code;

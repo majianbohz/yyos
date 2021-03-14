@@ -1,4 +1,5 @@
 #include "descriptor.h"
+#include "process.h"
 
 // 全局描述符表长度
 #define GDT_LENGTH 30 // 

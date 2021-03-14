@@ -20,9 +20,6 @@ void _start() {
   setprintline(3);
   printstr("enter yyos kernel...");
 
-  // set TSS 
-  init_tss_descriptor();
-
   entry_task_init();
 
   while (1) {}
