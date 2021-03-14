@@ -10,7 +10,7 @@ extern void init_idt();
 extern void init_tss_descriptor();
 extern void in_port_byte(int port, char *pval);
 extern void out_port_byte(int port, char val);
-extern void entry_task_init();
+extern void enter_task_system();
 
 // kernel entry 
 void _start() {
@@ -20,7 +20,7 @@ void _start() {
   setprintline(3);
   printstr("enter yyos kernel...");
 
-  entry_task_init();
+  enter_task_system();
 
   while (1) {}
 }
@@ -39,8 +39,8 @@ void c_isr(unsigned int irqNo) {
   }
 }
 
-void  task_init() {
+void  task_system() {
    while (1) {
-     printc('K');
+     printc('S');
    }  
 }

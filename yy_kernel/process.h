@@ -15,8 +15,6 @@ struct {
    int  ecx;
    int  eax;
 
-   int  retaddr;
-
    int  eip_origin;
    int  cs_origin;
    int  eflags_origin;
