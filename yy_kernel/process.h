@@ -8,8 +8,8 @@ struct {
    int  ds;
    int  edi;
    int  esi;
-   int  ebp;
-   int  esp;
+   int  ebp; 
+   int  esp_old; // pushad 命令执行前的 栈位置
    int  ebx;
    int  edx;
    int  ecx;

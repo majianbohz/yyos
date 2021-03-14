@@ -42,7 +42,7 @@ bootloader.elf : yy_bootloader/*.s yy_bootloader/*.c  common/*.s common/*.c
   
 kernel.elf : yy_kernel/*.s yy_kernel/*.c  common/*.s common/*.c
 	rm -f *.o
-	$(ASM) $(ASMFLAGS_ELF) -o switchdescriptortable.o yy_kernel/switchdescriptortable.s
+	$(ASM) $(ASMFLAGS_ELF) -o descriptortable_manage.o yy_kernel/descriptortable_manage.s
 	$(ASM) $(ASMFLAGS_ELF) -o interrupt.o yy_kernel/interrupt.s
 	$(ASM) $(ASMFLAGS_ELF) -o print.o common/print.s
 	$(ASM) $(ASMFLAGS_ELF) -o port.o common/port.s
@@ -51,7 +51,7 @@ kernel.elf : yy_kernel/*.s yy_kernel/*.c  common/*.s common/*.c
 	$(CC)  $(CCFLAGS)  -o descriptor.o yy_kernel/descriptor.c
 	$(CC)  $(CCFLAGS)  -o process.o yy_kernel/process.c
 	$(CC)  $(CCFLAGS)  -o convert.o common/convert.c
-	$(LD)  $(LDFLAGS_KERNEL)  -o $@  kernel.o  print.o descriptor.o switchdescriptortable.o interrupt.o convert.o port.o process.o process_manage.o # kernel.o must put first, affect binary file out
+	$(LD)  $(LDFLAGS_KERNEL)  -o $@  kernel.o  print.o descriptor.o descriptortable_manage.o interrupt.o convert.o port.o process.o process_manage.o # kernel.o must put first, affect binary file out
 	objcopy -O binary $@  kernel
 	cp -f kernel cimg/
 	ls -l  cimg/

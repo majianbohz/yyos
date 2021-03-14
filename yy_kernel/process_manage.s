@@ -3,7 +3,7 @@
 ;
 
 global switch_task_asm ;
-global switch_tss ;
+global switch_tss_asm ;
 
 ; 注意：该函数是 iretd 返回
 switch_task_asm:
