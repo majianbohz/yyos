@@ -15,6 +15,8 @@ IDTDescr idt[IDT_LENGTH];
 // IDTR
 IDT_PTR idt_ptr;
 
+TSS  tss;
+
 extern void isrx();
 extern void isr0();
 extern void isr1();
@@ -69,7 +71,7 @@ void init_gdt()
 	// 采用 Intel 平坦模型
 	set_descriptor(0, 0, 0, 0, 0);             	// 按照 Intel 文档要求，第一个描述符必须全 0
 	set_descriptor(1, 0xB8000, 0x3E80, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_BYTE); 	// 
-  set_descriptor(2, 0, 0, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_DATA_RW, GRAN_BYTE); 	// TSS
+  set_descriptor(2, (unsigned int)&tss, sizeof(TSS), DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_TSS, GRAN_BYTE); 	// TSS
 
   set_descriptor(10, 0, 0xFFFFF, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 内核指令段 4G
 	set_descriptor(11, 0, 0xFFFFF, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 内核数据段 4G

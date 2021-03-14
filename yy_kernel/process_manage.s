@@ -3,12 +3,22 @@
 ;
 
 global switch_task_asm ;
+global switch_tss ;
 
+; 注意：该函数是 iretd 返回
 switch_task_asm:
-  
-  ;push ebp
-  mov ebp, esp
- 
-  mov esp, [ebp + 4] ; 
+  mov esp, [esp + 4] ; // 切换 栈空间   
   iretd
 
+;
+switch_tss_asm:
+  push ebp ；
+  mov ebp, esp 
+
+  mov eax, [ebp + 8] ; // 取参数 tss selector 
+
+  ltr ax;
+  pop ebp
+  ret
+
+;  
