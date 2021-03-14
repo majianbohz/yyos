@@ -26,7 +26,8 @@ init8259:
    nop
    nop
    
-   mov al, 11111000b
+   ;mov al, 11111000b
+   mov al, 11111111b
    out 021h, al
    mov al, 11111111b
    out 0a1h, al

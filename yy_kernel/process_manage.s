@@ -12,7 +12,7 @@ switch_task_asm:
 
 ;
 switch_tss_asm:
-  push ebp ；
+  push ebp 
   mov ebp, esp 
 
   mov eax, [ebp + 8] ; // 取参数 tss selector 
