@@ -7,7 +7,7 @@
 
 extern void  switch_task_asm(void*);
 extern void  switch_tss_asm(int tss_selector);
-extern void  task_system();  // system task -> first task
+extern void  proccess_system();  // 系统进程 -> 系统第一个进程 Ring 1
 extern TSS tss;
 
 TCB  process_control_block[5];

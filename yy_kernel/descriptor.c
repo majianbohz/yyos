@@ -18,6 +18,8 @@ IDT_PTR idt_ptr;
 
 TSS  tss;
 
+extern short selector_kernel_code;
+
 extern void isrx();
 extern void isr0();
 extern void isr1();
@@ -97,50 +99,50 @@ void init_gdt()
 void init_idt() 
 {
   for (int i=20; i<=31; i++) {
-    set_idt_descriptor(i, &isrx, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+    set_idt_descriptor(i, &isrx, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
   }
 
   for (int i=48; i<IDT_LENGTH; i++) {
-    set_idt_descriptor(i, &isrx, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+    set_idt_descriptor(i, &isrx, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
   }
 
-    set_idt_descriptor(0, &isr0, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(1, &isr1, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(2, &isr2, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(3, &isr3, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(4, &isr4, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(5, &isr5, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(6, &isr6, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(7, &isr7, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(8, &isr8, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(9, &isr9, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(10, &isr10, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(11, &isr11, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(12, &isr12, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(13, &isr13, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(14, &isr14, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(15, &isr15, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(16, &isr16, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(17, &isr17, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(18, &isr18, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(19, &isr19, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(0, &isr0, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(1, &isr1, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(2, &isr2, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(3, &isr3, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(4, &isr4, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(5, &isr5, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(6, &isr6, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(7, &isr7, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(8, &isr8, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(9, &isr9, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(10, &isr10, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(11, &isr11, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(12, &isr12, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(13, &isr13, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(14, &isr14, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(15, &isr15, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(16, &isr16, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(17, &isr17, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(18, &isr18, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(19, &isr19, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
 
-    set_idt_descriptor(32, &isr32, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(33, &isr33, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(34, &isr34, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(35, &isr35, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(36, &isr36, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(37, &isr37, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(38, &isr38, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(39, &isr39, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(40, &isr40, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(41, &isr41, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(42, &isr42, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(43, &isr43, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(44, &isr44, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(45, &isr45, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(46, &isr46, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
-    set_idt_descriptor(47, &isr47, 0x8, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(32, &isr32, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(33, &isr33, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(34, &isr34, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(35, &isr35, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(36, &isr36, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(37, &isr37, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(38, &isr38, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(39, &isr39, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(40, &isr40, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(41, &isr41, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(42, &isr42, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(43, &isr43, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(44, &isr44, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(45, &isr45, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(46, &isr46, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
+  set_idt_descriptor(47, &isr47, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
 
   idt_ptr.limit = sizeof(IDTDescr) * IDT_LENGTH - 1;
   idt_ptr.base = (unsigned int)&idt;

@@ -20,7 +20,7 @@ void _start() {
   setprintline(3);
   printstr("enter yyos kernel...");
 
-  enter_task_system();
+  proccess_system();
 
   while (1) {}
 }
@@ -39,7 +39,8 @@ void c_isr(unsigned int irqNo) {
   }
 }
 
-void  task_system() {
+// 系统进程  (编译进内核)
+void  proccess_system() {
    while (1) {
      printc('S');
    }  
