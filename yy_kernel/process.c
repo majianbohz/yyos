@@ -7,7 +7,7 @@
 
 extern void  switch_task_asm(void*);
 extern void  switch_tss_asm(int tss_selector);
-extern void  proccess_system();  // 系统进程 -> 系统第一个进程 Ring 1
+extern void  process_system();  // 系统进程 -> 系统第一个进程 Ring 1
 extern TSS tss;
 
 TCB  process_control_block[5];
@@ -45,7 +45,7 @@ void enter_task_system() {
   // TCB
   TCB tcb = process_control_block[0];
   tcb.cs_origin = selector_task_system_code;
-  tcb.eip_origin = (int)&task_system;
+  tcb.eip_origin = (int)&process_system;
   
   tcb.ss_origin = selector_task_system_data;
   tcb.esp_origin = 0xffffff; // offset 16M 

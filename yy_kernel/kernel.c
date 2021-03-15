@@ -20,9 +20,9 @@ void _start() {
   setprintline(3);
   printstr("enter yyos kernel...");
 
-  proccess_system();
-
-  while (1) {}
+  while (1) {
+    printc('K');
+  }
 }
 
 
