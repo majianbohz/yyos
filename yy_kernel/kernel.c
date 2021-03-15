@@ -18,10 +18,10 @@ void _start() {
   init_idt();
 
   setprintline(3);
-  printstr("enter yyos kernel...");
+  printstr("enter yyos kernel");
 
   while (1) {
-    printc('K');
+    printc('.');
   }
 }
 
@@ -40,8 +40,15 @@ void c_isr(unsigned int irqNo) {
 }
 
 // 系统进程  (编译进内核)
-void  proccess_system() {
-   while (1) {
-     printc('S');
+void  process_system() {
+   char buf[10];
+   buf[0] = 'K';
+   buf[1] = '0';
+   short i=0;
+   while (i++) {
+     convertInt2Hex(i, buf+2);
+     printstr(buf);
    }  
 }
+
+
