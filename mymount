@@ -1,0 +1,7 @@
+sudo umount cimg/
+sudo losetup -d /dev/loop6
+sudo losetup  -f --show --partscan c.img
+sudo mount /dev/loop6p1 cimg/
+losetup
+ 
+
