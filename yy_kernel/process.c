@@ -50,7 +50,7 @@ void switch_usertask(int taskId) {
  // TCB
   TCB tcb = process_control_block[taskId];
   tcb.ss_r0 = selector_task_system_stack_kernel;
-  tcb.esp_r0 = 0xffffff; //16M
+  tcb.esp_r0 = 0xfff; //4k
   tcb.id = taskId;
   tcb.name[0]='s';
   tcb.name[1]=0;
