@@ -13,7 +13,7 @@ extern TSS tss;
 
 TCB  process_control_block[5];
 
-const short selector_display_seg = (1 << 3) | RPL_R0;  //0x10
+const short selector_display_seg = (1 << 3) | RPL_R0;  //0x8
 const short selector_tss = (2 << 3) | RPL_R0;  //0x10
 
 const short selector_kernel_code = (10 << 3) | RPL_R0;  // 0x50
@@ -73,8 +73,9 @@ void switch_usertask(int taskId) {
   stackFrameKernelTask.gs = selector_display_seg; 
   
   int stackTopKernelTask = get_descriptor_high_addr(selector_task_system_stack_kernel);
-  memcpy_asm(stackTopKernelTask-sizeof(StackFrame_KernelTask), &stackFrameKernelTask, sizeof(StackFrame_KernelTask));
+  void* pStackFrame = (void*)(stackTopKernelTask-sizeof(StackFrame_KernelTask));
+  memcpy_asm(pStackFrame, &stackFrameKernelTask, sizeof(StackFrame_KernelTask));
 
-  switch_task_asm( stackTopKernelTask-sizeof(StackFrame_KernelTask) ); // 参数为 iretd 指令执行前, 需要设置的栈位置
+  switch_task_asm(pStackFrame); // 参数为 iretd 指令执行前, 需要设置的栈位置
 }
 

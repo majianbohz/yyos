@@ -181,10 +181,10 @@ void set_idt_descriptor(int index, void * offset, unsigned short selector, unsig
 
 // from GDT
 int get_descriptor_high_addr(short selector) {
-  DESCRIPTOR* pdesc = gdt[selector>>3];
-  int base = (pdesc->base_high << 24) | (pdesc->base_mid << 16) | pdesc->base_low;
+  DESCRIPTOR* pdesc = &gdt[selector>>3];
+  int base = (pdesc->base_high << 24) | (pdesc->base_middle << 16) | pdesc->base_low;
   int limit = (pdesc->limit_hight<<16) | pdesc->limit_low;
-  if (0 == (pdesc->attr_high & GRAN_4K))
+  if (0 != (pdesc->attr_high & GRAN_4K))
     limit = limit * 0x1000; //4K
 
   return  base + limit;  
