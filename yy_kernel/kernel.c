@@ -11,6 +11,7 @@ extern void init_tss_descriptor();
 extern void in_port_byte(int port, char *pval);
 extern void out_port_byte(int port, char val);
 extern void switch_usertask(int taskId);
+extern void delay_asm(int num);
 
 // kernel entry 
 void _start() {
@@ -43,13 +44,15 @@ void c_isr(unsigned int irqNo) {
 
 // 系统进程  (编译进内核)
 void  process_system() {
-   char buf[10];
-   buf[0] = 'K';
-   buf[1] = '0';
-   short i=0;
-   while (i++) {
-     convertInt2Hex(i, buf+2);
+   char buf[20];
+   buf[0] = ' ';
+   buf[1] = 'K';
+   buf[2] = 'A';
+   int i=0;
+   while (1) {
+     convertInt2Hex(i++, buf+3);
      printstr(buf);
+     delay_asm(80000000);
    }  
 }
 
