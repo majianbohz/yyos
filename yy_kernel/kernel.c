@@ -21,10 +21,11 @@ void _start() {
   setprintline(3);
   printstr("enter yyos kernel");
 
-  switch_usertask(0);
+  //switch_usertask(0);
 
   while (1) {
     printc('.');
+    delay_asm(10000000);
   }
 }
 

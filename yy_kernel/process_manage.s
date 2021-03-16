@@ -15,8 +15,7 @@ switch_task_asm:
   pop ds ;
   popad  ;
 
-  ; esp point to tcb.eip_origin
- 
+  ; esp point to tcb.eip_origin 
   iretd
 
 ;
