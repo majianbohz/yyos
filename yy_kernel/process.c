@@ -63,7 +63,7 @@ void switch_usertask(int taskId) {
   StackFrame_KernelTask  stackFrameKernelTask;
   stackFrameKernelTask.cs_origin = selector_task_system_code;
   stackFrameKernelTask.eip_origin = (int)&process_system;
-  
+  stackFrameKernelTask.eflags_origin = 0x3202; // IOPL  IF  
   stackFrameKernelTask.ss_origin = selector_task_system_data;
   stackFrameKernelTask.esp_origin = 0xffffff; // offset 16M 
 
