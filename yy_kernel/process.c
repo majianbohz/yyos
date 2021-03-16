@@ -7,6 +7,7 @@
 
 extern void  switch_task_asm(void*);
 extern void  switch_tss_asm(int tss_selector);
+extern void  memcpy_asm(void* dest, void* src, int num);
 extern void  process_system();  // 系统进程 -> 系统第一个进程 Ring 1
 extern TSS tss;
 
@@ -17,14 +18,22 @@ const short selector_tss = (2 << 3) | RPL_R0;  //0x10
 
 const short selector_kernel_code = (10 << 3) | RPL_R0;  // 0x50
 const short selector_kernel_data = (11 << 3) | RPL_R0;  // 0x58
-const short selector_task_system_code = (12 << 3) | RPL_R1; // 0x60
-const short selector_task_system_data = (13 << 3) | RPL_R1; // 0x68
-const short selector_task_kernel2_code = (14 << 3) | RPL_R1; // 0x70
-const short selector_task_kernel2_data = (15 << 3) | RPL_R1; // 0x78
-const short selector_task_user1_code = (16 << 3) | RPL_R3;  //0x83
-const short selector_task_user1_data = (17 << 3) | RPL_R3;  //0x8b
-const short selector_task_user2_code = (18 << 3) | RPL_R3;  //0x93
-const short selector_task_user2_data = (19 << 3) | RPL_R3;  //0x9b
+
+const short selector_task_system_code = (12 << 3) | RPL_R1; // 0x61
+const short selector_task_system_data = (13 << 3) | RPL_R1; // 0x69
+const short selector_task_system_stack_kernel = (14 << 3) | RPL_R0; // 0x70
+
+const short selector_task_system2_code = (15 << 3) | RPL_R1; // 0x79
+const short selector_task_system2_data = (16 << 3) | RPL_R1; // 0x81
+const short selector_task_system2_stack_kernel = (17 << 3) | RPL_R0; // 0x88
+
+const short selector_task_user1_code = (18 << 3) | RPL_R3;  //0x93
+const short selector_task_user1_data = (19 << 3) | RPL_R3;  //0x9b
+const short selector_task_user1_stack_kernel = (20 << 3) | RPL_R0; // 0xa0
+
+const short selector_task_user2_code = (21 << 3) | RPL_R3;  //0xab
+const short selector_task_user2_data = (22 << 3) | RPL_R3;  //0xb3
+const short selector_task_user2_stack_kernel = (23 << 3) | RPL_R0; // 0xb8
 
 void switch2TaskUser1() {
   tss.SS0 = selector_task_user1_data;
@@ -36,25 +45,36 @@ void switch2TaskUser2() {
   tss.ESP0 = 0xffffff; //16M 
 }
 
-void enter_task_system() {
+void switch_usertask(int taskId) {
+
+ // TCB
+  TCB tcb = process_control_block[taskId];
+  tcb.ss_r0 = selector_task_system_stack_kernel;
+  tcb.esp_r0 = 0xffffff; //16M
+  tcb.id = taskId;
+  tcb.name[0]='s';
+  tcb.name[1]=0;
+
   // TSS 
-  tss.SS0 = selector_task_system_data;
-  tss.ESP0 = 0xffffff; //16M
+  tss.SS0 = tcb.ss_r0;
+  tss.ESP0 = tcb.esp_r0;
   switch_tss_asm(selector_tss); 
 
-  // TCB
-  TCB tcb = process_control_block[0];
-  tcb.cs_origin = selector_task_system_code;
-  tcb.eip_origin = (int)&process_system;
+  StackFrame_KernelTask  stackFrameKernelTask;
+  stackFrameKernelTask.cs_origin = selector_task_system_code;
+  stackFrameKernelTask.eip_origin = (int)&process_system;
   
-  tcb.ss_origin = selector_task_system_data;
-  tcb.esp_origin = 0xffffff; // offset 16M 
+  stackFrameKernelTask.ss_origin = selector_task_system_data;
+  stackFrameKernelTask.esp_origin = 0xffffff; // offset 16M 
 
-  tcb.ds = selector_task_system_data;
-  tcb.es = selector_task_system_data;
-  tcb.fs = selector_task_system_data;
-  tcb.gs = selector_display_seg; 
+  stackFrameKernelTask.ds = selector_task_system_data;
+  stackFrameKernelTask.es = selector_task_system_data;
+  stackFrameKernelTask.fs = selector_task_system_data;
+  stackFrameKernelTask.gs = selector_display_seg; 
+  
+  int stackTopKernelTask = get_descriptor_high_addr(selector_task_system_stack_kernel);
+  memcpy_asm(stackTopKernelTask-sizeof(StackFrame_KernelTask), &stackFrameKernelTask, sizeof(StackFrame_KernelTask));
 
-  switch_task_asm( &tcb ); // 参数为 iretd 指令执行前, 需要设置的栈位置
+  switch_task_asm( stackTopKernelTask-sizeof(StackFrame_KernelTask) ); // 参数为 iretd 指令执行前, 需要设置的栈位置
 }
 

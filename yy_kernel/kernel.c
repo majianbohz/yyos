@@ -10,7 +10,7 @@ extern void init_idt();
 extern void init_tss_descriptor();
 extern void in_port_byte(int port, char *pval);
 extern void out_port_byte(int port, char val);
-extern void enter_task_system();
+extern void switch_usertask(int taskId);
 
 // kernel entry 
 void _start() {
@@ -19,6 +19,8 @@ void _start() {
 
   setprintline(3);
   printstr("enter yyos kernel");
+
+  switch_usertask(0);
 
   while (1) {
     printc('.');

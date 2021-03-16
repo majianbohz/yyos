@@ -1,6 +1,6 @@
 // 描述符
 typedef
-struct DESCRIPTOR_ENTRY {
+struct DESCRIPTOR {
 	unsigned short limit_low;     // 段界限   15～0
 	unsigned short  base_low;     // 段基地址 15～0
 	unsigned char  base_middle;   // 段基地址 23～16
@@ -8,7 +8,7 @@ struct DESCRIPTOR_ENTRY {
 	unsigned char  limit_hight:4;  // 段界限 19～16
 	unsigned char  attr_high:4;    // 0 : AVL(留给系统软件使用)  1: 0 （固定值） 2: D/B (0=16位段 1=32位段) 3: G (0=byte 1=4kbyte)
 	unsigned char  base_high;     // 段基地址 31～24
-} __attribute__((packed)) DESCRIPTOR_ENTRY;
+} __attribute__((packed)) DESCRIPTOR;
 
 // GDTR
 typedef
@@ -71,3 +71,4 @@ struct IDT_PTR {
 
 void set_descriptor(int index, unsigned int  base, unsigned int limit, unsigned char attr, unsigned char gran);
 void set_idt_descriptor(int index, void *offset, unsigned short selector, unsigned char type_attr); 
+int get_descriptor_high_addr(short selector);

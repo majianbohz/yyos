@@ -6,6 +6,8 @@ struct {
    int  fs;
    int  es;
    int  ds;
+
+   // pushad / popad 部分
    int  edi;
    int  esi;
    int  ebp; 
@@ -15,12 +17,22 @@ struct {
    int  ecx;
    int  eax;
 
+   // 硬件自动部分
    int  eip_origin;
    int  cs_origin;
    int  eflags_origin;
    int  esp_origin;
    int  ss_origin;
+}__attribute__((packed))  StackFrame_KernelTask;
 
+typedef
+struct {
+   // 用于填写 TSS
+   int  esp_r0;
+   int  ss_r0;
+
+   int  id;
+   char name[20];
 } __attribute__((packed))  TCB;
 
 typedef 

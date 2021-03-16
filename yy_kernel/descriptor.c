@@ -5,7 +5,7 @@
 #define GDT_LENGTH 30 // 
 
 // 全局描述符表定义
-DESCRIPTOR_ENTRY gdt[GDT_LENGTH];
+DESCRIPTOR gdt[GDT_LENGTH];
 
 // GDTR
 GDT_PTR gdt_ptr;
@@ -68,7 +68,7 @@ extern void switch_idt(void* pgdtptr);
 void init_gdt()
 {
   // 全局描述符表界限 e.g. 从 0 开始，所以总长要 - 1
-  gdt_ptr.limit = sizeof(DESCRIPTOR_ENTRY) * GDT_LENGTH - 1;
+  gdt_ptr.limit = sizeof(DESCRIPTOR) * GDT_LENGTH - 1;
   gdt_ptr.base = (unsigned int)&gdt;
   
   // 采用 Intel 平坦模型
@@ -79,18 +79,25 @@ void init_gdt()
   // 内核: Ring0 code & data segments
   set_descriptor(10, 0, 0xFFFFF, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 内核指令段 4G
   set_descriptor(11, 0, 0xFFFFF, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 内核数据段 4G
+  // 内核栈顶 16M
   
   // 内核任务: Ring 1 code & data segments
-  set_descriptor(12, 0, 0xFFFFF, DPL_R1 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 0#内核进程指令段 16M
-  set_descriptor(13, 0, 0xFFFFF, DPL_R1 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 0#内核进程数据段 16M
-  set_descriptor(14, 0, 0xFFFFF, DPL_R1 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 0#内核进程指令段 16M
-  set_descriptor(15, 0, 0xFFFFF, DPL_R1 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 0#内核进程数据段 16M
+  set_descriptor(12, 0, 0xFFFFF, DPL_R1 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 0#系统进程指令段 16M
+  set_descriptor(13, 0, 0xFFFFF, DPL_R1 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 0#系统进程数据段 16M
+  set_descriptor(14, 0xFFE000, 0x1000, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_BYTE); 	// 0#系统进程内核栈段 4K
+
+  set_descriptor(15, 0, 0xFFFFF, DPL_R1 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 1#系统进程指令段 16M
+  set_descriptor(16, 0, 0xFFFFF, DPL_R1 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 1#系统进程数据段 16M
+  set_descriptor(17, 0xFFD000, 0x1000, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_BYTE); 	// 1#系统进程内核栈段 4K
   
   // 用户任务: Ring 3 code & data segments
-  set_descriptor(16, 0x2000000, 0xFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 1#用户进程指令段 16M
-  set_descriptor(17, 0x2000000, 0xFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 1#用户进程数据段 16M
-  set_descriptor(18, 0x3000000, 0xFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 2#用户进程指令段 16M
-  set_descriptor(19, 0x3000000, 0xFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 2#用户进程数据段 16M
+  set_descriptor(18, 0x2000000, 0xFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 2#用户进程指令段 16M
+  set_descriptor(19, 0x2000000, 0xFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 2#用户进程数据段 16M
+  set_descriptor(20, 0xFFC000, 0x1000, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_BYTE); 	// 2#系统进程内核栈段 4K
+  
+  set_descriptor(21, 0x3000000, 0xFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 3#用户进程指令段 16M
+  set_descriptor(22, 0x3000000, 0xFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 3#用户进程数据段 16M
+  set_descriptor(23, 0xFFB000, 0x1000, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_BYTE); 	// 3#系统进程内核栈段 4K
   
   // 加载全局描述符表地址到 GPTR 寄存器
   switch_gdt(&gdt_ptr);
@@ -171,3 +178,15 @@ void set_idt_descriptor(int index, void * offset, unsigned short selector, unsig
 	idt[index].zero = 0;
 	idt[index].type_attr = type_attr | 0X80;  //0x80 -> P 段存在标记
 }
+
+// from GDT
+int get_descriptor_high_addr(short selector) {
+  DESCRIPTOR* pdesc = gdt[selector>>3];
+  int base = (pdesc->base_high << 24) | (pdesc->base_mid << 16) | pdesc->base_low;
+  int limit = (pdesc->limit_hight<<16) | pdesc->limit_low;
+  if (0 == (pdesc->attr_high & GRAN_4K))
+    limit = limit * 0x1000; //4K
+
+  return  base + limit;  
+}
+
