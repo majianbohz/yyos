@@ -27,6 +27,7 @@ default : clean  masterboot bootloader.elf  kernel.elf
 
 clean : 
 	rm -f $(TARGET) *.o
+	./mymount
 
 masterboot : yy_masterboot/*.s
 	$(ASM) $(ASMFLAGS_BIN) -o $@ yy_masterboot/*.s

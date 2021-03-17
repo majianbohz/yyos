@@ -326,16 +326,8 @@ isr32:
 
 ;   
 isr33:
-  pushad
-  push ds
-  push es
-  push fs
-  push gs
-
-  mov ax, [selector_kernel_data]
-  mov ds, ax
-  mov es, ax
-  mov fs, ax
+  push esi
+  push edi
 
   mov eax, 33
   push eax   ; 32 bit
@@ -345,11 +337,8 @@ isr33:
   mov al, 020h
   out 020h, al  ; 020h port No
 
-  pop gs
-  pop fs
-  pop es
-  pop ds
-  popad
+  pop edi
+  pop esi
   iretd
    
 ;
