@@ -82,14 +82,15 @@ void init_gdt()
   // 内核栈顶 16M
   
   // 内核任务: Ring 1 code & data segments
+  // 栈段的基址 要与 数据段的基址 保持一致，用于保证 C 语言中的 全局变量 和 局部变量 的指针都基于相同的基址
   set_descriptor(12, 0, 0xFFFFF, DPL_R1 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 0#系统进程指令段 4G
   set_descriptor(13, 0, 0xFFFFF, DPL_R1 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 0#系统进程数据段 4G
   set_descriptor(14, 0, 0xFFD,  DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_STACK_RW, GRAN_4K); 	// 0#系统进程内核栈段 向下扩展  段起始地址：0xFFD000 + 0xFFF + 0x1 = 0xFFE000
 
   set_descriptor(15, 0, 0xFFFFF, DPL_R1 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 1#系统进程指令段 16M
   set_descriptor(16, 0, 0xFFFFF, DPL_R1 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 1#系统进程数据段 16M
-  set_descriptor(17, 0xFFD000, 0x1000, DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_BYTE); 	// 1#系统进程内核栈段 4K
-  
+  set_descriptor(17, 0, 0xFFC,  DPL_R0 | SEG_FLAG_DATA_CODE | SEG_TYPE_STACK_RW, GRAN_4K);  // 0#系统进程内核栈段 向下扩展  段起始地址：0xFFC000 + 0xFFF + 0x1 = 0xFFD000
+
   // 用户任务: Ring 3 code & data segments
   set_descriptor(18, 0x2000000, 0xFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_CODE_XR, GRAN_4K); 	// 2#用户进程指令段 16M
   set_descriptor(19, 0x2000000, 0xFFF, DPL_R3 | SEG_FLAG_DATA_CODE | SEG_TYPE_DATA_RW, GRAN_4K); 	// 2#用户进程数据段 16M
