@@ -326,6 +326,8 @@ isr32:
 
 ;   
 isr33:
+  nop ;
+  nop ;
   pushad
 
   push ds

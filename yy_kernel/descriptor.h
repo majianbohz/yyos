@@ -17,8 +17,9 @@ struct GDT_PTR {
 	unsigned int  base; 	// 全局描述符表 32位 基地址
 } __attribute__((packed)) GDT_PTR;
 
-// 数据段 代码段
+//  代码段 栈段 数据段
 #define SEG_TYPE_DATA_RW 2
+#define SEG_TYPE_STACK_RW 6
 #define SEG_TYPE_CODE_XR 10
 
 // 系统段

@@ -53,7 +53,7 @@ void  process_system() {
    while (1) {
      convertInt2Hex(i++, buf+3);
      printstr(buf);
-     delay_asm(800000000);
+     delay_asm(100000000);
    }  
 }
 

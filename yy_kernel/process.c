@@ -50,7 +50,7 @@ void switch_usertask(int taskId) {
  // TCB
   TCB tcb = process_control_block[taskId];
   tcb.ss_r0 = selector_task_system_stack_kernel;
-  tcb.esp_r0 = 0xfff; //4k
+  tcb.esp_r0 = 0xFFF000;
   tcb.id = taskId;
   tcb.name[0]='s';
   tcb.name[1]=0;
@@ -72,7 +72,7 @@ void switch_usertask(int taskId) {
   stackFrameKernelTask.fs = selector_task_system_data;
   stackFrameKernelTask.gs = selector_display_seg; 
   
-  int stackTopKernelTask = get_descriptor_high_addr(selector_task_system_stack_kernel);
+  int stackTopKernelTask = 0xFFF000; //get_descriptor_high_addr(selector_task_system_stack_kernel);
   void* pStackFrame = (void*)(stackTopKernelTask-sizeof(StackFrame_KernelTask));
   memcpy_asm(pStackFrame, &stackFrameKernelTask, sizeof(StackFrame_KernelTask));
 
