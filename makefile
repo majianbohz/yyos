@@ -25,7 +25,8 @@ TARGET  = masterboot bootloader.elf  kernel.elf
 
 default : clean  masterboot bootloader.elf  kernel.elf
 
-clean : 
+clean :
+	./mysync
 	rm -f $(TARGET) *.o
 	./mymount
 
