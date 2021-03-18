@@ -11,6 +11,7 @@ extern void init_tss_descriptor();
 extern void in_port_byte(int port, char *pval);
 extern void out_port_byte(int port, char val);
 extern void switch_usertask(int taskId);
+extern void create_process(int processId);
 extern void delay_asm(int num);
 
 // kernel entry 
@@ -21,6 +22,7 @@ void _start() {
   setprintline(3);
   printstr("enter yyos kernel");
 
+  create_process(0);
   switch_usertask(0);
 
   while (1) {
@@ -32,7 +34,9 @@ void _start() {
 
 void c_isr(unsigned int irqNo) {
   char buf[10];
-  convertChar2Hex((unsigned char)irqNo, buf);
+  buf[0] = ' ';
+  buf[1] = 'I';
+  convertChar2Hex((unsigned char)irqNo, buf+2);
   printstr(buf);
  
   // 33 keyboard irq#

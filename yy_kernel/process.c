@@ -11,7 +11,7 @@ extern void  memcpy_asm(void* dest, void* src, int num);
 extern void  process_system();  // 系统进程 -> 系统第一个进程 Ring 1
 extern TSS tss;
 
-TCB  process_control_block[5];
+PCB  process_control_block[10];
 
 const short selector_display_seg = (1 << 3) | RPL_R0;  //0x8
 const short selector_tss = (2 << 3) | RPL_R0;  //0x10
@@ -35,47 +35,51 @@ const short selector_task_user2_code = (21 << 3) | RPL_R3;  //0xab
 const short selector_task_user2_data = (22 << 3) | RPL_R3;  //0xb3
 const short selector_task_user2_stack_kernel = (23 << 3) | RPL_R0; // 0xb8
 
-void switch2TaskUser1() {
-  tss.SS0 = selector_task_user1_data;
-  tss.ESP0 = 0xffffff; //16M 
-}
-
-void switch2TaskUser2() {
-  tss.SS0 = selector_task_user2_data;
-  tss.ESP0 = 0xffffff; //16M 
-}
-
-void switch_usertask(int taskId) {
-
- // TCB
-  TCB tcb = process_control_block[taskId];
-  tcb.ss_r0 = selector_task_system_stack_kernel;
-  tcb.esp_r0 = 0xFFF000;
-  tcb.id = taskId;
-  tcb.name[0]='s';
-  tcb.name[1]=0;
+void switch_usertask(int processId) {
+  PCB *ppcb = &process_control_block[processId];
 
   // TSS 
-  tss.SS0 = tcb.ss_r0;
-  tss.ESP0 = tcb.esp_r0;
+  tss.SS0 = ppcb->ss_r0;
+  tss.ESP0 = ppcb->esp_r0;
   switch_tss_asm(selector_tss); 
 
   StackFrame_KernelTask  stackFrameKernelTask;
-  stackFrameKernelTask.cs_origin = selector_task_system_code;
-  stackFrameKernelTask.eip_origin = (int)&process_system;
-  stackFrameKernelTask.eflags_origin = 0x3202; // IOPL  IF  
-  stackFrameKernelTask.ss_origin = selector_task_system_data;
-  stackFrameKernelTask.esp_origin = 0xffffff; // offset 16M 
+  stackFrameKernelTask.cs_user_mode_spot = ppcb->cs_origin;
+  stackFrameKernelTask.eip_user_mode_spot = ppcb->eip_origin;
+  stackFrameKernelTask.eflags_user_mode_spot = ppcb->eflags_origin;
+  stackFrameKernelTask.ss_user_mode_spot = ppcb->ss_origin;
+  stackFrameKernelTask.esp_user_mode_spot = ppcb->esp_origin;
 
-  stackFrameKernelTask.ds = selector_task_system_data;
-  stackFrameKernelTask.es = selector_task_system_data;
-  stackFrameKernelTask.fs = selector_task_system_data;
-  stackFrameKernelTask.gs = selector_display_seg; 
+  stackFrameKernelTask.ds_user_mode_spot = ppcb->ds_origin;
+  stackFrameKernelTask.es_user_mode_spot = ppcb->ds_origin;
+  stackFrameKernelTask.fs_user_mode_spot = ppcb->fs_origin;
+  stackFrameKernelTask.gs_user_mode_spot = ppcb->gs_origin;
   
-  int stackTopKernelTask = 0xFFF000; //get_descriptor_high_addr(selector_task_system_stack_kernel);
-  void* pStackFrame = (void*)(stackTopKernelTask-sizeof(StackFrame_KernelTask));
+  void* pStackFrame = (void*)(ppcb->esp_r0 - sizeof(StackFrame_KernelTask));
   memcpy_asm(pStackFrame, &stackFrameKernelTask, sizeof(StackFrame_KernelTask));
 
   switch_task_asm(pStackFrame); // 参数为 iretd 指令执行前, 需要设置的栈位置
 }
 
+void create_process(int processId) {
+    PCB* ppcb = &process_control_block[processId];
+    
+    if (0 == processId) {
+        ppcb->ss_r0 = selector_task_system_stack_kernel;
+        ppcb->esp_r0 = 0xFFF000;
+        ppcb->id = processId;
+        ppcb->name[0]='s';
+        ppcb->name[1]=0;
+        
+        ppcb->cs_origin = selector_task_system_code;
+        ppcb->eip_origin = (int)&process_system;
+        ppcb->eflags_origin = 0x3202; // IOPL  IF
+        ppcb->ss_origin = selector_task_system_data;
+        ppcb->esp_origin = 0xffffff; // offset 16M
+
+        ppcb->ds_origin = selector_task_system_data;
+        ppcb->es_origin = selector_task_system_data;
+        ppcb->fs_origin = selector_task_system_data;
+        ppcb->gs_origin = selector_display_seg;
+    }
+}

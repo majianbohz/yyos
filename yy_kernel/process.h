@@ -2,38 +2,50 @@
 
 typedef
 struct {
-   int  gs;
-   int  fs;
-   int  es;
-   int  ds;
+   int  gs_user_mode_spot;
+   int  fs_user_mode_spot;
+   int  es_user_mode_spot;
+   int  ds_user_mode_spot;
 
    // pushad / popad 部分
-   int  edi;
-   int  esi;
-   int  ebp; 
-   int  esp_old; // pushad 命令执行前的 栈位置
-   int  ebx;
-   int  edx;
-   int  ecx;
-   int  eax;
+   int  edi_user_mode_spot;
+   int  esi_user_mode_spot;
+   int  ebp_user_mode_spot;
+   int  esp_old;             // pushad 指令执行前的 栈位置
+   int  ebx_user_mode_spot;
+   int  edx_user_mode_spot;
+   int  ecx_user_mode_spot;
+   int  eax_user_mode_spot;
 
    // 硬件自动部分
-   int  eip_origin;
-   int  cs_origin;
-   int  eflags_origin;
-   int  esp_origin;
-   int  ss_origin;
+   int  eip_user_mode_spot;
+   int  cs_user_mode_spot;
+   int  eflags_user_mode_spot;
+   int  esp_user_mode_spot;
+   int  ss_user_mode_spot;
 }__attribute__((packed))  StackFrame_KernelTask;
 
 typedef
 struct {
    // 用于填写 TSS
-   int  esp_r0;
-   int  ss_r0;
+   int  ss_r0;  // kernel_mode 
+   int  esp_r0; // kernel_mode
 
    int  id;
    char name[20];
-} __attribute__((packed))  TCB;
+
+   // 进程创建时的值
+   short cs_origin; // user_mode:
+   int eip_origin;  // user_mode:
+   int eflags_origin; // user_mode: IOPL  IF
+   short ss_origin; // user_mode:
+   int esp_origin;  // user_mode:
+
+   short ds_origin; // user_mode:
+   short es_origin; // user_mode:
+   short fs_origin; // user_mode:
+   short gs_origin; // user_mode:
+} __attribute__((packed))  PCB;
 
 typedef 
 struct {
