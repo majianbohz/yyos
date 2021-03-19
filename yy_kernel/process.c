@@ -44,6 +44,8 @@ void init_tr() {
     switch_tss_asm(selector_tss);
 }
 
+// 注意：这个函数是不会返回的 ！！
+// 切换到目标进程的内核栈 和 Spot栈帧底
 void switch_usertask(int processId) {
   PCB *ppcb = &process_control_block[processId];
 
