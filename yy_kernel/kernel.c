@@ -38,27 +38,6 @@ void _start() {
   }
 }
 
-void c_isr(unsigned int irqNo) {
-  char buf[10];
-  buf[0] = ' ';
-  buf[1] = 'I';
-  convertChar2Hex((unsigned char)irqNo, buf+2);
-  printstr(buf);
- 
-  // 33 keyboard irq#
-  if (33 == irqNo) { 
-    char val;
-    in_port_byte(0x60, &val);
-    printc(val);
-    
-    keystrokeCnt++;
-    if (0 == keystrokeCnt%2) {
-      curProcId++; curProcId = curProcId%2;
-      switch_usertask(curProcId);
-    }
-  }
-}
-
 // 系统进程  (编译进内核)
 void  process_system() {
    char buf[20];
@@ -87,4 +66,15 @@ void  process_system2() {
    }
 }
 
-
+void procKeyboardInt() {
+    char val;
+    in_port_byte(0x60, &val);
+    printc(val);
+    
+    keystrokeCnt++;
+    if (0 == keystrokeCnt%2) {
+      curProcId++; curProcId = curProcId%2;
+      switch_usertask(curProcId);
+    }
+}
+ 
