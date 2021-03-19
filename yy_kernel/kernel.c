@@ -22,8 +22,8 @@ void _start() {
   setprintline(3);
   printstr("enter yyos kernel");
 
-  create_process(0);
-  switch_usertask(0);
+  create_process(1);
+  switch_usertask(1);
 
   while (1) {
     printc('.');
@@ -59,6 +59,20 @@ void  process_system() {
      printstr(buf);
      delay_asm(100000000);
    }  
+}
+
+// 系统进程  (编译进内核)
+void  process_system2() {
+   char buf[20];
+   buf[0] = ' ';
+   buf[1] = 'K';
+   buf[2] = 'B';
+   int i=0;
+   while (1) {
+     convertInt2Hex(i++, buf+3);
+     printstr(buf);
+     delay_asm(100000000);
+   }
 }
 
 

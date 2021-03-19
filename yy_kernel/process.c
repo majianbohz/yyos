@@ -9,6 +9,7 @@ extern void  switch_task_asm(void*);
 extern void  switch_tss_asm(int tss_selector);
 extern void  memcpy_asm(void* dest, void* src, int num);
 extern void  process_system();  // 系统进程 -> 系统第一个进程 Ring 1
+extern void  process_system2();  // 系统进程 -> 系统第一个进程 Ring 1
 extern TSS tss;
 
 PCB  process_control_block[10];
@@ -69,17 +70,38 @@ void create_process(int processId) {
         ppcb->esp_r0 = 0xFFF000;
         ppcb->id = processId;
         ppcb->name[0]='s';
-        ppcb->name[1]=0;
+        ppcb->name[1]='1';
+        ppcb->name[2]=0;
         
         ppcb->cs_origin = selector_task_system_code;
         ppcb->eip_origin = (int)&process_system;
         ppcb->eflags_origin = 0x3202; // IOPL  IF
         ppcb->ss_origin = selector_task_system_data;
-        ppcb->esp_origin = 0xffffff; // offset 16M
+        ppcb->esp_origin = 0x1ffffff; // offset 16M
 
         ppcb->ds_origin = selector_task_system_data;
         ppcb->es_origin = selector_task_system_data;
         ppcb->fs_origin = selector_task_system_data;
         ppcb->gs_origin = selector_display_seg;
     }
+    else if (1 == processId) {
+        ppcb->ss_r0 = selector_task_system2_stack_kernel;
+        ppcb->esp_r0 = 0xFFE000;
+        ppcb->id = processId;
+        ppcb->name[0]='s';
+        ppcb->name[1]='2';
+        ppcb->name[2]=0;
+        
+        ppcb->cs_origin = selector_task_system2_code;
+        ppcb->eip_origin = (int)&process_system2;
+        ppcb->eflags_origin = 0x3202; // IOPL  IF
+        ppcb->ss_origin = selector_task_system2_data;
+        ppcb->esp_origin = 0x2ffffff; // offset 16M
+
+        ppcb->ds_origin = selector_task_system2_data;
+        ppcb->es_origin = selector_task_system2_data;
+        ppcb->fs_origin = selector_task_system2_data;
+        ppcb->gs_origin = selector_display_seg;
+    }
+
 }
