@@ -7,6 +7,7 @@ extern void convertInt2Hex(int, char*);
 extern void convertChar2Hex(char myChar, char* str);
 extern void init_gdt();
 extern void init_idt();
+extern void init_tr();
 extern void init_tss_descriptor();
 extern void in_port_byte(int port, char *pval);
 extern void out_port_byte(int port, char val);
@@ -14,23 +15,28 @@ extern void switch_usertask(int taskId);
 extern void create_process(int processId);
 extern void delay_asm(int num);
 
+int curProcId = 0;
+int keystrokeCnt = 0;
+
 // kernel entry 
 void _start() {
   init_gdt();
   init_idt();
+  
+  init_tr();
 
   setprintline(3);
   printstr("enter yyos kernel");
 
+  create_process(0);
   create_process(1);
-  switch_usertask(1);
+  switch_usertask(curProcId);
 
   while (1) {
     printc('.');
     delay_asm(10000000);
   }
 }
-
 
 void c_isr(unsigned int irqNo) {
   char buf[10];
@@ -44,6 +50,12 @@ void c_isr(unsigned int irqNo) {
     char val;
     in_port_byte(0x60, &val);
     printc(val);
+    
+    keystrokeCnt++;
+    if (0 == keystrokeCnt%2) {
+      curProcId++; curProcId = curProcId%2;
+      switch_usertask(curProcId);
+    }
   }
 }
 

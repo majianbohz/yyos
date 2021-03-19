@@ -7,7 +7,9 @@ global switch_tss_asm ;
 
 ; 注意：该函数是 iretd 返回
 switch_task_asm:
-  mov esp, [esp + 4] ; // 切换 栈空间 到 TCB Entry   
+  mov ebp, esp
+  mov esp, [ebp + 8] ; // 使用当前SS段, 切换到目标任务的SS段 到 PCB Entry
+  mov  ss, [ebp + 4] ; // 使用当前SS段, 切换到目标任务的SS段
 
   pop gs ;
   pop fs ;

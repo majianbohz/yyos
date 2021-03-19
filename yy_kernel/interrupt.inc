@@ -53,14 +53,14 @@ isr%1:  ; 在这里 bochs 设置断点有效
   mov ds, ax
   mov es, ax
   mov fs, ax
+  
+  mov al, 020h
+  out %3, al  ; 020h port No
 
   mov eax, %1
   push eax   ; 32 bit
-  call c_isr
+  call c_isr   ;NOTE: WILL NOT RETURN IF PROCESS SWITCH OCCUR
   add esp, 4
-
-  mov al, 020h
-  out %3, al  ; 020h port No
 
   pop gs
   pop fs
