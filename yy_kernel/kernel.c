@@ -15,8 +15,9 @@ extern void switch_usertask(int taskId);
 extern void create_process(int processId);
 extern void delay_asm(int num);
 
-int curProcId = 0;
-int keystrokeCnt = 0;
+unsigned int curProcId = 0;
+unsigned int keystrokeCnt = 0;
+unsigned int timerCnt = 0;
 
 // kernel entry 
 void _start() {
@@ -66,15 +67,25 @@ void  process_system2() {
    }
 }
 
+void procTimerInt() {
+    timerCnt++;
+    if (0 == timerCnt%200) {
+      curProcId++; curProcId = curProcId%2;
+      switch_usertask(curProcId);
+    }
+}
+
 void procKeyboardInt() {
     char val;
     in_port_byte(0x60, &val);
     printc(val);
     
+    /*
     keystrokeCnt++;
     if (0 == keystrokeCnt%2) {
       curProcId++; curProcId = curProcId%2;
       switch_usertask(curProcId);
     }
+    */
 }
  
