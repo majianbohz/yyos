@@ -22,19 +22,23 @@ const short selector_kernel_data = (11 << 3) | RPL_R0;  // 0x58
 
 const short selector_task_system_code = (12 << 3) | RPL_R1; // 0x61
 const short selector_task_system_data = (13 << 3) | RPL_R1; // 0x69
-const short selector_task_system_stack_kernel = (14 << 3) | RPL_R0; // 0x70
+const short selector_task_system_stack_user = (14 << 3) | RPL_R1; // 0x70
+const short selector_task_system_stack_kernel = (15 << 3) | RPL_R0; // 0x79
 
-const short selector_task_system2_code = (15 << 3) | RPL_R1; // 0x79
-const short selector_task_system2_data = (16 << 3) | RPL_R1; // 0x81
-const short selector_task_system2_stack_kernel = (17 << 3) | RPL_R0; // 0x88
+const short selector_task_system2_code = (16 << 3) | RPL_R1; // 0x81
+const short selector_task_system2_data = (17 << 3) | RPL_R1; // 0x89
+const short selector_task_system2_stack_user = (18 << 3) | RPL_R1; // 0x91
+const short selector_task_system2_stack_kernel = (19 << 3) | RPL_R0; // 0x98
 
-const short selector_task_user1_code = (18 << 3) | RPL_R3;  //0x93
-const short selector_task_user1_data = (19 << 3) | RPL_R3;  //0x9b
-const short selector_task_user1_stack_kernel = (20 << 3) | RPL_R0; // 0xa0
+const short selector_task_user1_code = (20 << 3) | RPL_R3;  //0x9a
+const short selector_task_user1_data = (21 << 3) | RPL_R3;  //0xa3
+const short selector_task_user1_stack_user = (22 << 3) | RPL_R3; // 0xaa
+const short selector_task_user1_stack_kernel = (23 << 3) | RPL_R0; // 0xb0
 
-const short selector_task_user2_code = (21 << 3) | RPL_R3;  //0xab
-const short selector_task_user2_data = (22 << 3) | RPL_R3;  //0xb3
-const short selector_task_user2_stack_kernel = (23 << 3) | RPL_R0; // 0xb8
+const short selector_task_user2_code = (24 << 3) | RPL_R3;  //
+const short selector_task_user2_data = (25 << 3) | RPL_R3;  //
+const short selector_task_user2_stack_user = (26 << 3) | RPL_R3; // 0xaa
+const short selector_task_user2_stack_kernel = (27 << 3) | RPL_R0; //
 
 void switch_usertask(int processId) {
   PCB *ppcb = &process_control_block[processId];
@@ -76,8 +80,8 @@ void create_process(int processId) {
         ppcb->cs_origin = selector_task_system_code;
         ppcb->eip_origin = (int)&process_system;
         ppcb->eflags_origin = 0x3202; // IOPL  IF
-        ppcb->ss_origin = selector_task_system_data;
-        ppcb->esp_origin = 0x1ffffff; // offset 16M
+        ppcb->ss_origin = selector_task_system_stack_user;
+        ppcb->esp_origin = 0x2000000; // offset 16M
 
         ppcb->ds_origin = selector_task_system_data;
         ppcb->es_origin = selector_task_system_data;
@@ -95,8 +99,8 @@ void create_process(int processId) {
         ppcb->cs_origin = selector_task_system2_code;
         ppcb->eip_origin = (int)&process_system2;
         ppcb->eflags_origin = 0x3202; // IOPL  IF
-        ppcb->ss_origin = selector_task_system2_data;
-        ppcb->esp_origin = 0x2ffffff; // offset 16M
+        ppcb->ss_origin = selector_task_system2_stack_user;
+        ppcb->esp_origin = 0x3000000; // offset 16M
 
         ppcb->ds_origin = selector_task_system2_data;
         ppcb->es_origin = selector_task_system2_data;
