@@ -5,6 +5,7 @@ extern void convertInt2Hex(int, char*);
 extern void convertChar2Hex(char myChar, char* str);
 extern void procKeyboardInt();
 extern void procTimerInt();
+extern void procSyscall();
 
 void c_isr(unsigned int irqNo) {
   char buf[10];
@@ -21,5 +22,9 @@ void c_isr(unsigned int irqNo) {
   // 33 keyboard irq#
   if (33 == irqNo) {
     procKeyboardInt();
+  }
+    
+  if (128 == irqNo) {
+    procSyscall();
   }
 }

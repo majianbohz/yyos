@@ -1,5 +1,8 @@
 // yyos kernel
 
+#include "process.h"
+#include "kernel.h"
+
 extern void printstr(char * msg); 
 extern void printc(char  mychar); 
 extern void setprintline(int lineNo);
@@ -14,6 +17,11 @@ extern void out_port_byte(int port, char val);
 extern void switch_usertask(int taskId);
 extern void create_process(int processId);
 extern void delay_asm(int num);
+extern void memcpy_asm(void* dest, void* src, int num);
+extern int  get_descriptor_base_addr(short selector);
+extern void syscall(int code, void* pin, int insize, void* pout, int outsize);
+
+extern PCB  process_control_block[10];
 
 unsigned int curProcId = 0;
 unsigned int keystrokeCnt = 0;
@@ -55,6 +63,10 @@ void  process_system() {
 
 // 系统进程  (编译进内核)
 void  process_system2() {
+    char buf2[20];
+   //syscall(int code, void* pin, int insize, void* pout, int outsize)
+    syscall(0x80, &buf2, 20, &buf2, 20);
+    
    char buf[20];
    buf[0] = ' ';
    buf[1] = 'K';
@@ -88,4 +100,19 @@ void procKeyboardInt() {
     }
     */
 }
- 
+
+// 基于一个前提：内核DS段和SS段的基址相同。
+void procSyscall() {
+  PCB* ppcb = &process_control_block[curProcId];
+  StackFrame_Spot* pSpotStackFrame = (StackFrame_Spot*)(ppcb->esp_r0 - sizeof(StackFrame_Spot));
+
+  int _ss_baseaddr = get_descriptor_base_addr(pSpotStackFrame->ss_user_mode_spot);
+  int _esp = pSpotStackFrame->esp_user_mode_spot;
+    
+  SysCall_Param *psyscall_param = (SysCall_Param*)(_ss_baseaddr + _esp + 4); // 4: 32bit return address value
+  //psyscall_param->code;
+    
+  int retVal = 0x8080;
+  memcpy_asm(psyscall_param->pout, &retVal, sizeof(int));
+}
+

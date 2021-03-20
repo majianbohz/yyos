@@ -23,7 +23,7 @@ struct {
    int  eflags_user_mode_spot;
    int  esp_user_mode_spot;
    int  ss_user_mode_spot;
-}__attribute__((packed))  StackFrame_KernelTask;
+}__attribute__((packed))  StackFrame_Spot;
 
 typedef
 struct {

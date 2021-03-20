@@ -53,25 +53,25 @@ void switch_usertask(int processId) {
   tss.SS0 = ppcb->ss_r0;
   tss.ESP0 = ppcb->esp_r0;
 
-  void* pStackFrame = (void*)(ppcb->esp_r0 - sizeof(StackFrame_KernelTask));
+  void* pStackFrame = (void*)(ppcb->esp_r0 - sizeof(StackFrame_Spot));
   switch_task_asm(ppcb->ss_r0, pStackFrame); // 参数为 iretd 指令执行前, 需要设置的栈位置
 }
 
 void init_process_kernel_stack(PCB* ppcb) {
-    StackFrame_KernelTask  stackFrameKernelTask;
-    stackFrameKernelTask.cs_user_mode_spot = ppcb->cs_origin;
-    stackFrameKernelTask.eip_user_mode_spot = ppcb->eip_origin;
-    stackFrameKernelTask.eflags_user_mode_spot = ppcb->eflags_origin;
-    stackFrameKernelTask.ss_user_mode_spot = ppcb->ss_origin;
-    stackFrameKernelTask.esp_user_mode_spot = ppcb->esp_origin;
+    StackFrame_Spot  spotStackFrame;
+    spotStackFrame.cs_user_mode_spot = ppcb->cs_origin;
+    spotStackFrame.eip_user_mode_spot = ppcb->eip_origin;
+    spotStackFrame.eflags_user_mode_spot = ppcb->eflags_origin;
+    spotStackFrame.ss_user_mode_spot = ppcb->ss_origin;
+    spotStackFrame.esp_user_mode_spot = ppcb->esp_origin;
 
-    stackFrameKernelTask.ds_user_mode_spot = ppcb->ds_origin;
-    stackFrameKernelTask.es_user_mode_spot = ppcb->ds_origin;
-    stackFrameKernelTask.fs_user_mode_spot = ppcb->fs_origin;
-    stackFrameKernelTask.gs_user_mode_spot = ppcb->gs_origin;
+    spotStackFrame.ds_user_mode_spot = ppcb->ds_origin;
+    spotStackFrame.es_user_mode_spot = ppcb->ds_origin;
+    spotStackFrame.fs_user_mode_spot = ppcb->fs_origin;
+    spotStackFrame.gs_user_mode_spot = ppcb->gs_origin;
     
-    void* pStackFrame = (void*)(ppcb->esp_r0 - sizeof(StackFrame_KernelTask));
-    memcpy_asm(pStackFrame, &stackFrameKernelTask, sizeof(StackFrame_KernelTask));
+    void* pStackFrame = (void*)(ppcb->esp_r0 - sizeof(StackFrame_Spot));
+    memcpy_asm(pStackFrame, &spotStackFrame, sizeof(StackFrame_Spot));
 }
 
 void create_process(int processId) {

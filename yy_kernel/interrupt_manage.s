@@ -44,4 +44,6 @@ macro_ISR_3 45, [selector_kernel_data], 0A0h  ;
 macro_ISR_3 46, [selector_kernel_data], 0A0h  ;
 macro_ISR_3 47, [selector_kernel_data], 0A0h  ;
 
+macro_ISR_2 128, [selector_kernel_data]  ;
 macro_ISR_2 255, [selector_kernel_data]  ;
+

@@ -20,6 +20,7 @@ TSS  tss;
 
 extern short selector_kernel_code;
 
+extern void isr128_raw();
 extern void isr255_raw();
 extern void isr0_raw();
 extern void isr1_raw();
@@ -122,6 +123,8 @@ void init_idt()
     set_idt_descriptor(i, &isr255_raw, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
   }
 
+  set_idt_descriptor(128, &isr128_raw, selector_kernel_code, DPL_R3 | SEG_FLAG_SYS | SEG_TYPE_INT); // R3 !!
+
   set_idt_descriptor(0, &isr0_raw, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
   set_idt_descriptor(1, &isr1_raw, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
   set_idt_descriptor(2, &isr2_raw, selector_kernel_code, DPL_R0 | SEG_FLAG_SYS | SEG_TYPE_INT);
@@ -199,3 +202,9 @@ int get_descriptor_high_addr(short selector) {
   return  base + limit;  
 }
 
+// from GDT
+int get_descriptor_base_addr(short selector) {
+    DESCRIPTOR* pdesc = &gdt[selector>>3];
+    int base = (pdesc->base_high << 24) | (pdesc->base_middle << 16) | pdesc->base_low;
+    return  base;
+}
