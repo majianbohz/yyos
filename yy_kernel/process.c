@@ -87,7 +87,7 @@ void create_process(int processId) {
         
         ppcb->cs_origin = selector_task_system_code;
         ppcb->eip_origin = (int)&process_system;
-        ppcb->eflags_origin = 0x3202; // IOPL  IF
+        ppcb->eflags_origin = 0x0202; // IOPL=0  IF = 0x200  bit2 must 1
         ppcb->ss_origin = selector_task_system_stack_user;
         ppcb->esp_origin = 0x2000000; // offset 16M
 
@@ -108,7 +108,7 @@ void create_process(int processId) {
         
         ppcb->cs_origin = selector_task_system2_code;
         ppcb->eip_origin = (int)&process_system2;
-        ppcb->eflags_origin = 0x3202; // IOPL  IF
+        ppcb->eflags_origin = 0x0202; // IOPL=0  IF = 0x200   bit2 must 1
         ppcb->ss_origin = selector_task_system2_stack_user;
         ppcb->esp_origin = 0x3000000; // offset 16M
 
